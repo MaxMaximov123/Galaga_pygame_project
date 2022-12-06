@@ -6,21 +6,29 @@ from Galaga import Galaga
 
 class MainWindow:
 	def __init__(self):
-		self.games = [Galaga]
-		self.games_names_pos = []
-		self.head_text_size = 50
+		self.size = config.WIDTH, config.HEIGHT
+		self.screen = pg.display.set_mode(self.size)
+		self.active_game = None
+		self.game = True
 		self.game_text_size = 30
+		self.head_text_size = 50
+		self.games_names_pos = []
+		self.games = [Galaga]
+		self.headers_games = []
+		self.correct_game = None
+		self.correct_position_ind = None
+
+	def run(self):
 		pg.init()
 		pg.display.set_caption('Games')
 		self.headers_games = []
-		self.size = config.WIDTH, config.HEIGHT
-		self.screen = pg.display.set_mode(self.size)
 		running = True
 		clock = pg.time.Clock()
 		cursor = Cursor(self.screen)
 		self.draw(config.GAMES_NAMES)
 		self.correct_position_ind = 0
 		while running:
+			self.screen.fill('black')
 			self.draw(config.GAMES_NAMES)
 			cursor.update_pos(self.games_names_pos[self.correct_position_ind % len(self.games_names_pos)])
 			for event in pg.event.get():
@@ -32,21 +40,26 @@ class MainWindow:
 					if event.key == pg.K_UP:
 						self.correct_position_ind -= 1
 					if event.key == pg.K_RETURN:
-						self.games[self.correct_position_ind]().run()
-						exit()
+						self.active_game = self.games[self.correct_position_ind % len(self.games)]()
+						self.active_game.run()
+						self.correct_game = self.correct_position_ind
+						# self.screen.fill('black')
 
 				if event.type == pg.MOUSEBUTTONDOWN:
 					if event.button == 1:
 						for ind, pos in enumerate(self.headers_games):
-							if pos[0] + pos[2].get_width() > event.pos[0] > pos[0] and pos[1] + pos[2].get_height() > event.pos[1] > pos[1]:
+							if pos[0] + pos[2].get_width() > event.pos[0] > pos[0] and pos[1] + pos[2].get_height() > \
+									event.pos[1] > pos[1]:
 								self.correct_position_ind = ind
 								break
-
+					if event.button == 4:
+						self.correct_position_ind -= 1
+					if event.button == 5:
+						self.correct_position_ind += 1
 
 			clock.tick(config.FPS)
 			pg.display.flip()
 		pg.quit()
-
 
 	def draw(self, games_names):
 		self.screen.fill((0, 0, 0))
@@ -65,3 +78,6 @@ class MainWindow:
 			self.games_names_pos.append([text_x - 10, text_y + text.get_height() // 2])
 			self.headers_games.append([text_x, text_y, text])
 
+
+if __name__ == '__main__':
+	win = MainWindow().run

@@ -8,7 +8,7 @@ objects = {}
 
 
 def main():
-	objects['MainWindow'] = MainWindow()
+	a = MainWindow().run()
 
 
 if __name__ == '__main__':
