@@ -4,7 +4,7 @@ import config
 
 class Cursor:
 	def __init__(self, screen):
-		self.size = 20
+		self.size = 15
 		self.screen = screen
 		self.pos = None
 		self.color = pg.Color('white')

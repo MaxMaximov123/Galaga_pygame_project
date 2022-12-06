@@ -2,4 +2,4 @@ HEIGHT = 540  # высота поля
 WIDTH = 960  # ширина поля
 
 FPS = 120  # fps игры
-GAMES_NAMES = ['GALAGA', 'ТАНКИ']
+GAMES_NAMES = ['GALAGA', 'ТЕСТ ПУСТО']
