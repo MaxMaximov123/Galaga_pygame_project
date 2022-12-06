@@ -1,4 +1,5 @@
-HEIGHT = 600  # высота поля
-WIDTH = 600  # ширина поля
+HEIGHT = 540  # высота поля
+WIDTH = 960  # ширина поля
 
 FPS = 120  # fps игры
+GAMES_NAMES = ['GALAGA', 'ТАНКИ']
