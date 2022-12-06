@@ -40,7 +40,7 @@ class MainWindow:
 					if event.key == pg.K_UP:
 						self.correct_position_ind -= 1
 					if event.key == pg.K_RETURN:
-						self.active_game = self.games[self.correct_position_ind % len(self.games)]()
+						self.active_game = self.games[self.correct_position_ind % len(self.games)](self)
 						self.active_game.run()
 						self.correct_game = self.correct_position_ind
 						# self.screen.fill('black')
