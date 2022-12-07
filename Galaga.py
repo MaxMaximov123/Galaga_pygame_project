@@ -21,8 +21,8 @@ class Galaga:
 		self.pause = None
 		self.btn_home = None
 
-		self.step_shot = 5  # сколько раз в секунду можно создавать выстрел
-		self.space_ship = SpaceShip('sprites/spaceship4.png', (config.WIDTH // 2, config.HEIGHT // 15 * 14))
+		self.step_shot = 6  # сколько раз в секунду можно создавать выстрел
+		self.space_ship = SpaceShip('sprites/spaceship4.png', (config.WIDTH // 2, config.HEIGHT // 15 * 13))
 		self.size = config.WIDTH, config.HEIGHT
 		self.group = pg.sprite.Group(self.space_ship)
 		self.pause_group = pg.sprite.Group()
@@ -30,6 +30,8 @@ class Galaga:
 		self.is_close_win = False
 		self.pause_screen = self.screen
 		self.button_menu = Button((30, 30), (30, 30), self.screen, path='sprites/menu.png')
+		self.image_backround = pg.image.load("sprites/Galaga_background.png").convert_alpha()  # картинка спрайта
+		self.image_backround = pg.transform.scale(self.image_backround, self.size)
 
 
 	def run(self):
@@ -38,15 +40,15 @@ class Galaga:
 		clock = pg.time.Clock()
 		self.group.add(self.button_menu)
 		while self.running:
-			self.screen.fill('black')
+			self.screen.blit(self.image_backround, (0, 0))
 			for event in pg.event.get():
 				if event.type == pg.QUIT:
 					self.running = False
 					self.is_close_win = True
 				if event.type == pg.MOUSEBUTTONDOWN:
-					if event.button == 4:
+					if event.button == 4 and not self.is_pause:
 						self.space_ship.left_move()
-					if event.button == 5:
+					if event.button == 5 and not self.is_pause:
 						self.space_ship.right_move()
 					if event.button == 1:
 						if self.button_menu.is_click(event.pos):
@@ -60,34 +62,38 @@ class Galaga:
 							self.running = False
 							self.is_close_win = True
 
+						if self.pause and self.pause.buttons[1].is_click(event.pos):
+							self.pause_group.remove(*self.pause.buttons)
+							self.is_pause = False
+
 				if event.type == pg.KEYDOWN:
 					if event.key == pg.K_LEFT:
 						self.left_is_down = True
 						self.frame_counter = config.FPS // self.step_shot
 
-					if event.key == pg.K_ESCAPE:
+					if event.key == pg.K_ESCAPE and not self.is_pause:
 						self.is_pause = True
 						self.pause = Pause((config.WIDTH // 2, config.HEIGHT // 5), self.screen)
 						self.pause_group = self.group
 						for i in self.pause.buttons:
 							self.pause_group.add(i)
 
-					if event.key == pg.K_RIGHT:
+					if event.key == pg.K_RIGHT and not self.is_pause:
 						self.right_is_down = True
 						self.frame_counter = config.FPS // self.step_shot
 
-					if event.key == pg.K_SPACE:
+					if event.key == pg.K_SPACE and not self.is_pause:
 						self.space_is_down = True
 						self.frame_counter = config.FPS // self.step_shot
 
 				if event.type == pg.KEYUP:
-					if event.key == pg.K_SPACE:
+					if event.key == pg.K_SPACE and not self.is_pause:
 						self.space_is_down = False
 
-					if event.key == pg.K_LEFT:
+					if event.key == pg.K_LEFT and not self.is_pause:
 						self.left_is_down = False
 
-					if event.key == pg.K_RIGHT:
+					if event.key == pg.K_RIGHT and not self.is_pause:
 						self.right_is_down = False
 			if self.frame_counter == config.FPS // self.step_shot:
 				self.frame_counter = 0
@@ -108,6 +114,8 @@ class Galaga:
 			else:
 				self.pause_group.draw(self.screen)
 				self.pause_group.update()
+
+
 			clock.tick(config.FPS)
 			pg.display.update()
 		# pg.quit()

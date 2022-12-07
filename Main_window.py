@@ -1,13 +1,14 @@
 import pygame as pg
-import config
 from Cursor import Cursor
 from Galaga import Galaga
+import config
 
 
 class MainWindow:
 	def __init__(self):
 		self.size = config.WIDTH, config.HEIGHT
 		self.screen = pg.display.set_mode(self.size)
+
 		self.active_game = None
 		self.game = True
 		self.game_text_size = 30

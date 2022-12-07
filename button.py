@@ -3,7 +3,7 @@ import config
 
 
 class Button(pg.sprite.Sprite):
-	def __init__(self, pos, size, screen, path='sprites/None.png', text=None, text_size=30):
+	def __init__(self, pos, size, screen, path='sprites/None.png', text=None, text_size=40):
 		pg.sprite.Sprite.__init__(self)
 		self.size = size  # размер кнопки
 		self.text_size = text_size
@@ -25,5 +25,5 @@ class Button(pg.sprite.Sprite):
 	def update(self):
 		if self.text:
 			font = pg.font.SysFont('monospace', self.text_size)
-			text = font.render(self.text, True, ('white'))
+			text = font.render(self.text, True, (194, 152, 0))
 			self.screen.blit(text, (self.pos[0] - text.get_width() // 2, self.pos[1] - text.get_height() // 2))

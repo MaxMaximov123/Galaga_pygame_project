@@ -5,7 +5,7 @@ import config
 class SpaceShip(pg.sprite.Sprite):
 	def __init__(self, path, pos):
 		pg.sprite.Sprite.__init__(self)
-		self.size = 70  # размер корабля
+		self.size = 80  # размер корабля
 		self.step = 30  # кол-во пикселей, на которое двигается корабль
 		self.image = pg.image.load(path).convert_alpha()  # картинка спрайта
 		self.image = pg.transform.scale(self.image, (self.size, self.size))
