@@ -1,6 +1,6 @@
 import pygame as pg
-import config
 import random
+from Objects import config
 
 
 class Enemy1(pg.sprite.Sprite):

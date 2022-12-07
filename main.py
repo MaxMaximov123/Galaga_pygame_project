@@ -1,8 +1,4 @@
-import pygame as pg
-from Galaga import Galaga
-import config
-from Main_window import MainWindow
-from Cursor import Cursor
+from Objects.Main_window import MainWindow
 
 objects = {}
 

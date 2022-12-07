@@ -1,6 +1,6 @@
 import pygame as pg
-import config
-from button import Button
+from Objects import config
+from Objects.button import Button
 
 
 class Frame(pg.sprite.Sprite):

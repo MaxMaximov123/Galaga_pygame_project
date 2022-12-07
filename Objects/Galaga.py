@@ -1,12 +1,10 @@
-from pprint import pprint
-
 import pygame as pg
-import config
-from SpaceShip import SpaceShip
-from Fire import Fire
-from button import Button
-from pause import Pause
-from Enemy import Enemy1
+from Objects import config
+from Objects.SpaceShip import SpaceShip
+from Objects.Fire import Fire
+from Objects.button import Button
+from Objects.pause import Pause
+from Objects.Enemy import Enemy1
 import random
 # from Main_window import MainWindow
 

@@ -1,7 +1,7 @@
 import pygame as pg
-from Cursor import Cursor
-from Galaga import Galaga
-import config
+from Objects.Cursor import Cursor
+from Objects.Galaga import Galaga
+from Objects import config
 
 
 class MainWindow:

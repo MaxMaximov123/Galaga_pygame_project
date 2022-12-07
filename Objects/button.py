@@ -1,5 +1,5 @@
 import pygame as pg
-import config
+from Objects import config
 
 
 class Button(pg.sprite.Sprite):
