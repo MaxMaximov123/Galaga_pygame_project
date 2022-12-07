@@ -1,7 +1,8 @@
 import pygame as pg
-from Objects.Cursor import Cursor
-from Objects.Galaga import Galaga
+from Objects.Galaga_objects.Cursor import Cursor
+from Objects.Galaga_objects.Galaga import Galaga
 from Objects import config
+from Objects.Tanks_objects.Tanks import Tanks
 
 
 class MainWindow:
@@ -14,7 +15,7 @@ class MainWindow:
 		self.game_text_size = 30
 		self.head_text_size = 50
 		self.games_names_pos = []
-		self.games = [Galaga]
+		self.games = [Galaga, Tanks]
 		self.headers_games = []
 		self.correct_game = None
 		self.correct_position_ind = None
