@@ -1,14 +1,19 @@
+from pprint import pprint
+
 import pygame as pg
 import config
 from SpaceShip import SpaceShip
 from Fire import Fire
 from button import Button
 from pause import Pause
+from Enemy import Enemy1
+import random
 # from Main_window import MainWindow
 
 
 class Galaga:
 	def __init__(self, main_win):
+		pg.mixer.pre_init(44100, -16, 1, 512)
 		self.main_win = main_win
 		self.frame_counter = 0
 		self.right_is_down = False
@@ -22,7 +27,7 @@ class Galaga:
 		self.btn_home = None
 
 		self.step_shot = 6  # сколько раз в секунду можно создавать выстрел
-		self.space_ship = SpaceShip('sprites/spaceship4.png', (config.WIDTH // 2, config.HEIGHT // 15 * 13))
+		self.space_ship = SpaceShip('sprites/spaceship2.png', (config.WIDTH // 2, config.HEIGHT // 15 * 13))
 		self.size = config.WIDTH, config.HEIGHT
 		self.group = pg.sprite.Group(self.space_ship)
 		self.pause_group = pg.sprite.Group()
@@ -32,6 +37,27 @@ class Galaga:
 		self.button_menu = Button((30, 30), (30, 30), self.screen, path='sprites/menu.png')
 		self.image_backround = pg.image.load("sprites/Galaga_background.png").convert_alpha()  # картинка спрайта
 		self.image_backround = pg.transform.scale(self.image_backround, self.size)
+		self.enemies = []
+		self.fires = []
+		self.sound_kill = pg.mixer.Sound("sounds/kill.mp3")
+		self.sound_kill_enemy = pg.mixer.Sound("sounds/kill_enemy.mp3")
+		self.sound_shot = pg.mixer.Sound("sounds/shot.mp3")
+		# self.sound_boom.set_volume(0.1)
+		self.enemies_place_left = self.size[0] // 12
+		self.enemies_place_up = self.size[1] // 10
+		self.enemies_matrix = [[0 for j in range(
+			self.enemies_place_left * 4, self.enemies_place_left * 8, 60)] for _ in range(
+			self.enemies_place_up, self.enemies_place_up * 5, 30)]
+
+		positions = []
+		for y in range(len(self.enemies_matrix)):
+			for x in range(len(self.enemies_matrix[0])):
+				positions += [[x, y]]
+		for i in random.choices(positions, k=20):
+			self.enemies.append(Enemy1('sprites/enemy1.png', (
+				self.enemies_place_left * i[0], self.enemies_place_up * i[1]), i))
+			self.enemies_matrix[i[1]][i[0]] = 1
+			self.group.add(self.enemies[-1])
 
 
 	def run(self):
@@ -52,19 +78,14 @@ class Galaga:
 						self.space_ship.right_move()
 					if event.button == 1:
 						if self.button_menu.is_click(event.pos):
-							self.is_pause = True
-							self.pause = Pause((config.WIDTH // 2, config.HEIGHT // 5), self.screen)
-							self.pause_group = self.group
-							for i in self.pause.buttons:
-								self.pause_group.add(i)
+							self.start_pause()
 
 						if self.pause and self.pause.buttons[0].is_click(event.pos):
 							self.running = False
 							self.is_close_win = True
 
 						if self.pause and self.pause.buttons[1].is_click(event.pos):
-							self.pause_group.remove(*self.pause.buttons)
-							self.is_pause = False
+							self.start()
 
 				if event.type == pg.KEYDOWN:
 					if event.key == pg.K_LEFT:
@@ -72,11 +93,7 @@ class Galaga:
 						self.frame_counter = config.FPS // self.step_shot
 
 					if event.key == pg.K_ESCAPE and not self.is_pause:
-						self.is_pause = True
-						self.pause = Pause((config.WIDTH // 2, config.HEIGHT // 5), self.screen)
-						self.pause_group = self.group
-						for i in self.pause.buttons:
-							self.pause_group.add(i)
+						self.start_pause()
 
 					if event.key == pg.K_RIGHT and not self.is_pause:
 						self.right_is_down = True
@@ -87,18 +104,20 @@ class Galaga:
 						self.frame_counter = config.FPS // self.step_shot
 
 				if event.type == pg.KEYUP:
-					if event.key == pg.K_SPACE and not self.is_pause:
+					if event.key == pg.K_SPACE:
 						self.space_is_down = False
 
-					if event.key == pg.K_LEFT and not self.is_pause:
+					if event.key == pg.K_LEFT:
 						self.left_is_down = False
 
-					if event.key == pg.K_RIGHT and not self.is_pause:
+					if event.key == pg.K_RIGHT:
 						self.right_is_down = False
 			if self.frame_counter == config.FPS // self.step_shot:
 				self.frame_counter = 0
 				if self.space_is_down:
-					self.group.add(Fire('sprites/fire1.png', (self.space_ship.rect.x + self.space_ship.size // 2, self.space_ship.rect.y)))
+					self.fires.append(Fire('sprites/fire1.png', (self.space_ship.rect.x + self.space_ship.size // 2, self.space_ship.rect.y)))
+					self.group.add(self.fires[-1])
+					self.sound_shot.play()
 
 			if self.frame_counter == config.FPS // self.step_move:
 				if self.left_is_down:
@@ -116,6 +135,20 @@ class Galaga:
 				self.pause_group.update()
 
 
+			for enemy in self.enemies:
+				for f in self.fires:
+					if f.is_collided_with(enemy):
+						self.sound_kill_enemy.play()
+						self.enemies.remove(enemy)
+						f.kill()
+						self.fires.remove(f)
+						enemy.kill()
+				if enemy.is_collided_with(self.space_ship):
+					self.sound_kill.play(maxtime=1)
+					self.space_ship.kill()
+					self.start_pause()
+
+
 			clock.tick(config.FPS)
 			pg.display.update()
 		# pg.quit()
@@ -123,6 +156,28 @@ class Galaga:
 
 	def is_close(self):
 		return self.is_close_win
+
+	def start_pause(self):
+		self.is_pause = True
+		self.pause = Pause((config.WIDTH // 2, config.HEIGHT // 5), self.screen)
+		self.pause_group = self.group
+		for i in self.pause.buttons:
+			self.pause_group.add(i)
+		for enemy in self.enemies:
+			enemy.can_move = False
+
+		for f in self.fires:
+			f.can_move = False
+
+	def start(self):
+		self.is_pause = False
+		self.pause_group.remove(*self.pause.buttons)
+		for enemy in self.enemies:
+			enemy.can_move = True
+			enemy.move = 0
+
+		for f in self.fires:
+			f.can_move = True
 
 
 	def close(self):
