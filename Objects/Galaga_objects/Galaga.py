@@ -25,15 +25,15 @@ class Galaga:
 		self.btn_home = None
 
 		self.step_shot = 6  # сколько раз в секунду можно создавать выстрел
-		self.space_ship = SpaceShip('sprites/Galaga/spaceship2.png', (config.WIDTH // 2, config.HEIGHT // 15 * 13))
+		self.space_ship = SpaceShip('data/Galaga/spaceship2.png', (config.WIDTH // 2, config.HEIGHT // 15 * 13))
 		self.size = config.WIDTH, config.HEIGHT
 		self.group = pg.sprite.Group(self.space_ship)
 		self.pause_group = pg.sprite.Group()
 		self.screen = pg.display.set_mode(self.size)
 		self.is_close_win = False
 		self.pause_screen = self.screen
-		self.button_menu = Button((30, 30), (30, 30), self.screen, path='sprites/menu.png')
-		self.image_backround = pg.image.load("sprites/Galaga/Galaga_background.png").convert_alpha()  # картинка спрайта
+		self.button_menu = Button((30, 30), (30, 30), self.screen, path='data/menu.png')
+		self.image_backround = pg.image.load("data/Galaga/Galaga_background.png").convert_alpha()  # картинка спрайта
 		self.image_backround = pg.transform.scale(self.image_backround, self.size)
 		self.enemies = []
 		self.fires = []
@@ -52,7 +52,7 @@ class Galaga:
 			for x in range(len(self.enemies_matrix[0])):
 				positions += [[x, y]]
 		for i in random.choices(positions, k=20):
-			self.enemies.append(Enemy1('sprites/Galaga/enemy1.png', (
+			self.enemies.append(Enemy1('data/Galaga/enemy1.png', (
 				self.enemies_place_left * i[0], self.enemies_place_up * i[1]), i))
 			self.enemies_matrix[i[1]][i[0]] = 1
 			self.group.add(self.enemies[-1])
@@ -113,7 +113,7 @@ class Galaga:
 			if self.frame_counter == config.FPS // self.step_shot:
 				self.frame_counter = 0
 				if self.space_is_down:
-					self.fires.append(Fire('sprites/Galaga/fire1.png', (self.space_ship.rect.x + self.space_ship.size // 2, self.space_ship.rect.y)))
+					self.fires.append(Fire('data/Galaga/fire1.png', (self.space_ship.rect.x + self.space_ship.size // 2, self.space_ship.rect.y)))
 					self.group.add(self.fires[-1])
 					self.sound_shot.play()
 

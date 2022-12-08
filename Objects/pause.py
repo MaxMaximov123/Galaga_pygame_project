@@ -8,7 +8,7 @@ class Frame(pg.sprite.Sprite):
 		pg.sprite.Sprite.__init__(self)
 		self.size = size  # размер кнопки
 		self.pos = pos
-		self.image = pg.image.load('sprites/Galaga/frame1.png').convert_alpha()  # картинка спрайта
+		self.image = pg.image.load('data/Galaga/frame1.png').convert_alpha()  # картинка спрайта
 		self.image = pg.transform.scale(self.image, (self.size[0], self.size[1]))
 		self.rect = self.image.get_rect(center=pos)  # контур спрайта
 
