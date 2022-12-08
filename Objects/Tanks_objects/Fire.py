@@ -29,7 +29,7 @@ class Fire(pg.sprite.Sprite):
 	def set_can_move(self, f):
 		self.can_move = f
 
-	def update(self):
+	def update(self, *args):
 		if self.can_move:
 			if config.HEIGHT > self.rect.y + self.size[1] > + self.size[1] and config.WIDTH + self.size[0] > self.rect.x + self.size[0] > 0:
 				self.rect.y += self.vector_y / config.FPS

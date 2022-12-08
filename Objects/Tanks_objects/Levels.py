@@ -2,6 +2,7 @@ import pygame as pg
 from pprint import pprint
 from Objects.Tanks_objects import Walls
 from Objects import config
+import copy
 
 
 walls = {
@@ -16,8 +17,8 @@ walls = {
 class Level1:
 	def __init__(self, screen):
 		self.size = config.SIZE_BOARD_FOR_TANKS
-		self.board = [['0' for x in range(self.size[0])] for y in range(self.size[1])]
-		self.board = [
+		self.vis_board = [['0' for x in range(self.size[0])] for y in range(self.size[1])]
+		self.vis_board = [
 			['b0', '0', '0', '0', '0', 'b1', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'b0'],
 			['0', '0', '0', '0', '0', 'b1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
 			['0', '0', '0', '0', '0', 'b1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
@@ -30,11 +31,12 @@ class Level1:
 		]
 		# for i in self.board:
 		# 	print(i)
+		self.board = copy.deepcopy(self.vis_board)
 
-		for y in range(len(self.board)):
-			for x in range(len(self.board[0])):
-				if self.board[y][x] != '0':
-					self.board[y][x] = walls[self.board[y][x]](screen, (x, y))
+		for y in range(len(self.vis_board)):
+			for x in range(len(self.vis_board[0])):
+				if self.vis_board[y][x] != '0':
+					self.board[y][x] = walls[self.vis_board[y][x]](screen, (x, y))
 
 		# for i in self.board:
 		# 	print(i)

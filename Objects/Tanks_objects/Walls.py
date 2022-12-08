@@ -13,7 +13,7 @@ class Brick0(pg.sprite.Sprite):
 		self.rect.x, self.rect.y = self.size * pos[0], self.size * pos[1]
 
 
-	def update(self):
+	def update(self, *args):
 		pass
 
 	def is_collided_with(self, sprite):
@@ -31,7 +31,7 @@ class Brick1(pg.sprite.Sprite):
 		self.rect.x, self.rect.y = self.size * pos[0] + self.size // 2, self.size * pos[1]
 
 
-	def update(self):
+	def update(self, *args):
 		pass
 
 	def is_collided_with(self, sprite):
@@ -49,7 +49,7 @@ class Brick2(pg.sprite.Sprite):
 		self.rect.x, self.rect.y = self.size * pos[0], self.size * pos[1] + self.size // 2
 
 
-	def update(self):
+	def update(self, *args):
 		pass
 
 	def is_collided_with(self, sprite):
@@ -67,7 +67,7 @@ class Brick3(pg.sprite.Sprite):
 		self.rect.x, self.rect.y = self.size * pos[0], self.size * pos[1]
 
 
-	def update(self):
+	def update(self, *args):
 		pass
 
 	def is_collided_with(self, sprite):
@@ -86,7 +86,7 @@ class Brick4(pg.sprite.Sprite):
 		self.rect.x, self.rect.y = self.size * pos[0], self.size * pos[1]
 
 
-	def update(self):
+	def update(self, *args):
 		pass
 
 	def is_collided_with(self, sprite):

@@ -1,3 +1,5 @@
+from pprint import pprint
+
 import pygame as pg
 from Objects import config
 from Objects.button import Button
@@ -36,12 +38,17 @@ class Tanks:
 
 		self.step_shot = config.FPS // 3   # сколько раз в секунду можно создавать выстрел
 		self.frame_counter_shot = self.step_shot
-		self.main_tank = Tank('data/Tanks/main_tank.png', (config.WIDTH // 2, config.HEIGHT // 15 * 13), self.screen)
+		self.main_tank = Tank('data/Tanks/main_tank.png', (config.WIDTH // 2, config.HEIGHT // 15 * 13), self)
 		self.main_tank_moves = {
 			'left': self.main_tank.left_move,
 			'right': self.main_tank.right_move,
 			'up': self.main_tank.up_move,
 			'down': self.main_tank.down_move}
+		self.reverse_main_tank_moves = {
+			'right': self.main_tank.left_move,
+			'left': self.main_tank.right_move,
+			'down': self.main_tank.up_move,
+			'up': self.main_tank.down_move}
 		self.names_buttons = {
 			'left': [pg.K_LEFT, pg.K_a],
 			'right': [pg.K_RIGHT, pg.K_d],
@@ -60,12 +67,13 @@ class Tanks:
 
 
 		# Инициализация уровня
-
+		self.walls = []
 		self.level = Levels.Level1(self.screen)
 		for y in range(len(self.level.board)):
 			for x in range(len(self.level.board[0])):
 				if self.level.board[y][x] != '0':
 					self.walls_group.add(self.level.board[y][x])
+					self.walls.append([x, y])
 
 		self.groups = [self.fires_group, self.tanks_group, self.walls_group, self.buttons_group]
 
@@ -134,6 +142,14 @@ class Tanks:
 
 			if self.button_down:
 				self.main_tank_moves[self.button_down]()
+				for x, y in self.walls:
+					if self.level.vis_board[y][x] in ['b0', 'b1', 'b2', 'b3', 'b4']:
+						if self.main_tank.is_collided_with(self.level.board[y][x]):
+							self.reverse_main_tank_moves[self.button_down]()
+							self.reverse_main_tank_moves[self.button_down]()
+							self.main_tank_moves[self.button_down]()
+
+
 
 			if not self.is_pause:
 				for group in self.groups:
