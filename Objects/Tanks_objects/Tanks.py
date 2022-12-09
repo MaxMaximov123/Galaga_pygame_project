@@ -18,6 +18,8 @@ class Tanks:
 		pg.mixer.pre_init(44100, -16, 1, 512)
 		pg.init()
 		pg.display.set_caption('Tanks')
+		self.level_num = 2
+		self.levels = [Levels.Level1, Levels.Level2]
 		self.main_win = main_win
 		self.button_down = ''
 		self.space_is_down = False
@@ -31,6 +33,7 @@ class Tanks:
 		self.pause_group = pg.sprite.Group()
 		self.buttons_group = pg.sprite.Group()
 		self.walls_group = pg.sprite.Group()
+		self.bush_group = pg.sprite.Group()
 		self.screen = pg.display.set_mode(self.size)
 		self.is_close_win = False
 		self.pause_screen = self.screen
@@ -69,14 +72,18 @@ class Tanks:
 
 		# Инициализация уровня
 		self.walls = []
-		self.level = Levels.Level1(self)
+		self.level = self.levels[self.level_num - 1](self)
 		for y in range(len(self.level.board)):
 			for x in range(len(self.level.board[0])):
-				if self.level.board[y][x] != '0':
+				if self.level.board[y][x] != '0' and self.level.vis_board[y][x] != 'sh':
 					self.walls_group.add(self.level.board[y][x])
 					self.walls.append([x, y])
+				elif self.level.vis_board[y][x] == 'sh':
+					print(999)
+					self.bush_group.add(self.level.board[y][x])
+					self.walls.append([x, y])
 
-		self.groups = [self.fires_group, self.tanks_group, self.walls_group, self.buttons_group]
+		self.groups = [self.walls_group, self.tanks_group, self.buttons_group, self.fires_group, self.bush_group]
 
 
 
@@ -141,13 +148,19 @@ class Tanks:
 					self.main_tank.rect.y + self.main_tank.size // 2), self.main_tank.vector_x, self.main_tank.vector_y))
 				self.fires_group.add(self.fires[-1])
 
-			for x, y in self.walls:
-				if 'b' in self.level.vis_board[y][x]:
-					if self.main_tank.is_collided_with(self.level.board[y][x]):
-						self.main_tank_can_move = False
-					# if not self.main_tank.is_collided_with(self.level.board[y][x]) and self.button_down and self.main_tank_can_move:
-					# 	# self.main_tank_moves[self.button_down]()
-					# 	# self.main_tank_can_move = False
+			# for x, y in self.walls:
+			# 	if 'b' in self.level.vis_board[y][x]:
+			# 		if self.main_tank.is_collided_with(self.level.board[y][x]):
+			# 			self.main_tank_can_move = False
+
+			if not self.is_pause:
+				for group in self.groups:
+					group.draw(self.screen)
+					group.update()
+
+			else:
+				self.pause_group.draw(self.screen)
+				self.pause_group.update()
 
 			if self.button_down:
 				if self.main_tank_can_move:
@@ -158,16 +171,6 @@ class Tanks:
 					self.main_tank.rect.y -= self.main_tank.vector_y
 					self.main_tank_can_move = False
 
-
-
-			if not self.is_pause:
-				for group in self.groups:
-					group.draw(self.screen)
-					group.update()
-
-			else:
-				self.pause_group.draw(self.screen)
-				self.pause_group.update()
 
 			self.frame_counter_shot += 1
 			if self.frame_counter_shot == config.FPS:

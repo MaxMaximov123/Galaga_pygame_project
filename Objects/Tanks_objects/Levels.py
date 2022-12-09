@@ -10,15 +10,15 @@ class Level1:
 		self.size = config.SIZE_BOARD_FOR_TANKS
 		self.vis_board = [['0' for x in range(self.size[0])] for y in range(self.size[1])]
 		self.vis_board = [
-			['b', '0', '0', '0', '0', 'b', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'b'],
+			['0', '0', '0', '0', '0', 'b', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'b'],
 			['0', '0', 'br', '0', '0', 'b', '0', '0', 'b', 'b', 'b', 'b', 'b', 'b', '0', '0'],
 			['0', '0', 'bl', '0', '0', 'b', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
 			['0', '0', 'bu', 'bd', 'bu', 'b', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
-			['0', '0', '0', '0', '0', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', '0', '0', '0'],
-			['0', '0', '0', '0', '0', 'b', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
-			['0', '0', '0', '0', 'b', 'b', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
-			['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
-			['b', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+			['0', '0', 'il', '0', '0', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', '0', '0', '0'],
+			['0', '0', 'il', '0', '0', 'b', '0', '0', '0', '0', 'bd', 'bd', '0', '0', '0', '0'],
+			['0', 'i', 'i', '0', 'b', 'b', '0', '0', '0', '0', '0', '0', 'bd', '0', '0', '0'],
+			['0', '0', '0', 'bd', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'bd', '0', '0'],
+			['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'bd', '0'],
 		]
 		# for i in self.board:
 		# 	print(i)
@@ -29,10 +29,45 @@ class Level1:
 				if self.vis_board[y][x] != '0':
 					if 'b' in self.vis_board[y][x]:
 						self.board[y][x] = Walls.Brick(game, (x, y), type_=self.vis_board[y][x])
+					if 'i' in self.vis_board[y][x]:
+						self.board[y][x] = Walls.Iron(game, (x, y), type_=self.vis_board[y][x])
 
 		# for i in self.board:
 		# 	print(i)
 
+
+class Level2:
+	def __init__(self, game):
+		self.size = config.SIZE_BOARD_FOR_TANKS
+		self.vis_board = [['0' for x in range(self.size[0])] for y in range(self.size[1])]
+		self.vis_board = [
+			['0', 'xz', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'iu', 'id', '0'],
+			['w', 'w', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'il', 'xz', 'i', 'ir'],
+			['w', 'w', 'bu', 'bu', 'bu', 'bu', 'bu', 'bu', 'bu', 'bu', 'bu', 'i', 'xz', 'xz', 'xz', 'ir'],
+			['w', 'br', '0', 'sh', 'sh', 'sh', '0', 'sh', '0', '0', '0', 'sh', 'xz', 'xz', 'xz', 'xz'],
+			['xz', 'br', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'sh', 'xz', '0', 'ir', 'xz'],
+			['xz', '0', 'bu', 'bd', 'bd', 'bd', 'bd', 'bd', 'bd', 'bd', 'bd', 'xz', 'xz', 'xz', 'ir', '0'],
+			['xz', '0', '0', '0', '0', '0', '0', 'sh', '0', '0', '0', 'i', '0', 'xz', 'xz', 'ir'],
+			['w', 'xz', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'il', '0', 'xz', 'ir'],
+			['w', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'iu', 'iu', '0'],
+		]
+		# for i in self.board:
+		# 	print(i)
+		self.board = copy.deepcopy(self.vis_board)
+
+		for y in range(len(self.vis_board)):
+			for x in range(len(self.vis_board[0])):
+				if self.vis_board[y][x] != '0':
+					if 'b' in self.vis_board[y][x]:
+						self.board[y][x] = Walls.Brick(game, (x, y), type_=self.vis_board[y][x])
+					if 'i' in self.vis_board[y][x]:
+						self.board[y][x] = Walls.Iron(game, (x, y), type_=self.vis_board[y][x])
+					if 'xz' in self.vis_board[y][x]:
+						self.board[y][x] = Walls.IronXZ(game, (x, y), type_=self.vis_board[y][x])
+					if 'w' in self.vis_board[y][x]:
+						self.board[y][x] = Walls.Water(game, (x, y), type_=self.vis_board[y][x])
+					if 'sh' in self.vis_board[y][x]:
+						self.board[y][x] = Walls.Bush(game, (x, y), type_=self.vis_board[y][x])
 
 
 if __name__ == '__main__':
