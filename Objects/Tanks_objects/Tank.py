@@ -3,7 +3,7 @@ from Objects import config
 
 
 class Tank(pg.sprite.Sprite):
-	def __init__(self, path, pos, tanks):
+	def __init__(self, path, pos, game):
 		pg.sprite.Sprite.__init__(self)
 		self.pos = pos
 		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]  # размер танка
@@ -12,7 +12,7 @@ class Tank(pg.sprite.Sprite):
 		self.base_image = pg.transform.scale(self.base_image, (self.size, self.size))
 		self.image = self.base_image
 		self.rect = self.image.get_rect(center=self.pos)  # контур спрайта
-		self.tanks = tanks
+		self.game = game
 		self.vector_x = 0
 		self.vector_y = -1
 		self.can_move = True

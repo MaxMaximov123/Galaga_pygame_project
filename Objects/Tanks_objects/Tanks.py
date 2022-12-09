@@ -58,6 +58,7 @@ class Tanks:
 		self.button_menu = Button((30, 30), (30, 30), self.screen, path='data/menu.png')
 		self.enemies = []
 		self.fires = []
+		self.main_tank_can_move = True
 		# self.sound_boom.set_volume(0.1)
 		self.enemies_place_left = self.size[0] // 12
 		self.enemies_place_up = self.size[1] // 10
@@ -68,7 +69,7 @@ class Tanks:
 
 		# Инициализация уровня
 		self.walls = []
-		self.level = Levels.Level1(self.screen)
+		self.level = Levels.Level1(self)
 		for y in range(len(self.level.board)):
 			for x in range(len(self.level.board[0])):
 				if self.level.board[y][x] != '0':
@@ -131,23 +132,31 @@ class Tanks:
 					if self.button_down and event.key in self.names_buttons[self.button_down]:
 						self.button_down = ''
 
+			self.main_tank_can_move = True
 
 			if self.space_is_down and self.frame_counter_shot == self.step_shot:
 				self.frame_counter_shot = 0
-				self.fires.append(Fire(self.screen, 'data/Tanks/fire1.png', (
+				self.fires.append(Fire(self, 'data/Tanks/fire1.png', (
 					self.main_tank.rect.x + self.main_tank.size // 2,
 					self.main_tank.rect.y + self.main_tank.size // 2), self.main_tank.vector_x, self.main_tank.vector_y))
 				self.fires_group.add(self.fires[-1])
-				# self.sound_shot.play()
+
+			for x, y in self.walls:
+				if 'b' in self.level.vis_board[y][x]:
+					if self.main_tank.is_collided_with(self.level.board[y][x]):
+						self.main_tank_can_move = False
+					# if not self.main_tank.is_collided_with(self.level.board[y][x]) and self.button_down and self.main_tank_can_move:
+					# 	# self.main_tank_moves[self.button_down]()
+					# 	# self.main_tank_can_move = False
 
 			if self.button_down:
-				self.main_tank_moves[self.button_down]()
-				for x, y in self.walls:
-					if self.level.vis_board[y][x] in ['b0', 'b1', 'b2', 'b3', 'b4']:
-						if self.main_tank.is_collided_with(self.level.board[y][x]):
-							self.reverse_main_tank_moves[self.button_down]()
-							self.reverse_main_tank_moves[self.button_down]()
-							self.main_tank_moves[self.button_down]()
+				if self.main_tank_can_move:
+					self.main_tank_moves[self.button_down]()
+					self.main_tank_can_move = False
+				else:
+					self.main_tank.rect.x -= self.main_tank.vector_x
+					self.main_tank.rect.y -= self.main_tank.vector_y
+					self.main_tank_can_move = False
 
 
 

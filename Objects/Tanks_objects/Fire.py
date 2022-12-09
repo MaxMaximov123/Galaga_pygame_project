@@ -3,13 +3,13 @@ from Objects import config
 
 
 class Fire(pg.sprite.Sprite):
-	def __init__(self, screen,  path, pos, vector_x=0, vector_y=1):
+	def __init__(self, game,  path, pos, vector_x=0, vector_y=1):
 		pg.sprite.Sprite.__init__(self)
 		self.step_show = 1
 		self.frame_counter = self.step_show // config.FPS
-		self.size = 30, 40  # размер пули
+		self.size = 20, 50  # размер пули
 		self.speed = config.FPS * 2  # скорость пули пикс/сек
-		self.screen = screen
+		self.game = game
 		self.image = pg.image.load(path).convert_alpha()  # картинка спрайта  # контур спрайта
 		self.can_move = True
 		self.vector_x = vector_x * self.speed
@@ -23,6 +23,7 @@ class Fire(pg.sprite.Sprite):
 			angle = 180
 		else:
 			angle = 0
+		self.pos = pos
 		self.image = pg.transform.rotate(self.image, angle)
 		self.rect = self.image.get_rect(center=pos)
 
@@ -36,9 +37,60 @@ class Fire(pg.sprite.Sprite):
 				self.rect.x += self.vector_x / config.FPS
 			else:
 				self.kill()
-			self.frame_counter += 1
-			if self.frame_counter >= config.FPS:
-				self.frame_counter = 0
+
+			for x, y in self.game.walls:
+				if self.is_collided_with(self.game.level.board[y][x]) and 'b' in self.game.level.vis_board[y][x]:
+					try:
+						if self.game.main_tank.rect.y >= self.game.level.board[y][x].rect.y + self.game.level.board[y][x].size[1]:
+							if self.game.level.board[y][x].type_ == 'b':
+								self.game.level.board[y][x].type_ = 'bu'
+								self.game.level.vis_board[y][x] = 'bu'
+								return
+						if self.game.main_tank.rect.y + self.game.main_tank.size <= self.game.level.board[y][x].rect.y:
+							if self.game.level.board[y][x].type_ == 'b':
+								self.game.level.board[y][x].type_ = 'bd'
+								self.game.level.vis_board[y][x] = 'bd'
+								return
+
+
+						if self.game.level.board[y][x].type_ == 'bu':
+							self.game.walls.remove([x, y])
+							self.game.level.board[y][x].kill()
+							self.game.level.board[y][x] = self.game.level.vis_board[y][x] = '0'
+							return
+						if self.game.level.board[y][x].type_ == 'bd':
+							self.game.walls.remove([x, y])
+							self.game.level.board[y][x].kill()
+							self.game.level.board[y][x] = self.game.level.vis_board[y][x] = '0'
+							return
+
+
+						if self.game.main_tank.rect.x >= self.game.level.board[y][x].rect.x + self.game.level.board[y][x].size[0]:
+							if self.game.level.board[y][x].type_ == 'b':
+								self.game.level.board[y][x].type_ = 'bl'
+								self.game.level.vis_board[y][x] = 'bl'
+								return
+						if self.game.main_tank.rect.x + self.game.main_tank.size <= self.game.level.board[y][x].rect.x:
+							if self.game.level.board[y][x].type_ == 'b':
+								self.game.level.board[y][x].type_ = 'br'
+								self.game.level.vis_board[y][x] = 'br'
+								return
+
+
+						if self.game.level.board[y][x].type_ == 'br':
+							self.game.walls.remove([x, y])
+							self.game.level.board[y][x].kill()
+							self.game.level.board[y][x] = self.game.level.vis_board[y][x] = '0'
+							return
+						if self.game.level.board[y][x].type_ == 'bl':
+							self.game.walls.remove([x, y])
+							self.game.level.board[y][x].kill()
+							self.game.level.board[y][x] = self.game.level.vis_board[y][x] = '0'
+							return
+
+					finally:
+						self.kill()
+
 
 	def is_collided_with(self, sprite):
 		return self.rect.colliderect(sprite.rect)
