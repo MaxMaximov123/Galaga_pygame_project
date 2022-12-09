@@ -79,7 +79,6 @@ class Tanks:
 					self.walls_group.add(self.level.board[y][x])
 					self.walls.append([x, y])
 				elif self.level.vis_board[y][x] == 'sh':
-					print(999)
 					self.bush_group.add(self.level.board[y][x])
 					self.walls.append([x, y])
 
