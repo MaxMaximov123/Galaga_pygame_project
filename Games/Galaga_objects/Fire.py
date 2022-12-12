@@ -1,5 +1,5 @@
 import pygame as pg
-from Objects import config
+from Games import config
 
 
 class Fire(pg.sprite.Sprite):

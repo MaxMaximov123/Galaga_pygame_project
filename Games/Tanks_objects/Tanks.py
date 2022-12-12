@@ -1,13 +1,14 @@
 from pprint import pprint
 
 import pygame as pg
-from Objects import config
-from Objects.button import Button
-from Objects.pause import Pause
-from Objects.Tanks_objects.Fire import Fire
+from Games import config
+from Games.button import Button
+from Games.pause import Pause
+from Games.Tanks_objects.Fire import Fire
 import random
-from Objects.Tanks_objects import Levels
-from Objects.Tanks_objects.Tank import Tank
+from Games.Tanks_objects import Levels
+from Games.Tanks_objects.Tank import Tank
+from Games.Tanks_objects.Create_new_level import Creater
 # from Main_window import MainWindow
 
 
@@ -18,16 +19,16 @@ class Tanks:
 		pg.mixer.pre_init(44100, -16, 1, 512)
 		pg.init()
 		pg.display.set_caption('Tanks')
-		self.level_num = 2
-		self.levels = [Levels.Level1, Levels.Level2]
-		self.main_win = main_win
-		self.button_down = ''
-		self.space_is_down = False
-		self.running = True
-		self.is_pause = False
-		self.pause = None
-		self.btn_home = None
-		self.size = config.WIDTH, config.HEIGHT
+		self.level_num = 3  # НОМЕР УРОВНЯ
+		self.levels = ['Games/Tanks_objects/data/levels/level0.csv']  # ОБЪЕКТЫ УРОВНИ
+		self.main_win = main_win  # СТАРТОВОЕ ОКНО
+		self.button_down = ''  # КАКАЯ КНОПКА НАЖАТА
+		self.space_is_down = False  # НАЖАТ ЛИ ПРОБЕЛ
+		self.running = True  # ЗАПУСК ИГРЫ
+		self.is_pause = False  # ЗАПУЩЕНА ЛИ ПАУЗА
+		self.pause = None  # ОБЪЕКТ ПАУЗА
+		self.btn_home = None  # КНОПКА МЕНЮ
+		self.size = config.WIDTH, config.HEIGHT  # РАЗМЕР ОКНА
 		self.fires_group = pg.sprite.Group()
 		self.tanks_group = pg.sprite.Group()
 		self.pause_group = pg.sprite.Group()
@@ -41,7 +42,7 @@ class Tanks:
 
 		self.step_shot = config.FPS // 3   # сколько раз в секунду можно создавать выстрел
 		self.frame_counter_shot = self.step_shot
-		self.main_tank = Tank('data/Tanks/main_tank.png', (config.WIDTH // 2, config.HEIGHT // 15 * 13), self)
+		self.main_tank = Tank('Games/Tanks_objects/data/images/main_tank.png', (config.WIDTH // 2, config.HEIGHT // 15 * 13), self)
 		self.main_tank_moves = {
 			'left': self.main_tank.left_move,
 			'right': self.main_tank.right_move,
@@ -58,7 +59,7 @@ class Tanks:
 			'up': [pg.K_UP, pg.K_w],
 			'down': [pg.K_DOWN, pg.K_s]}
 		self.tanks_group.add(self.main_tank)
-		self.button_menu = Button((30, 30), (30, 30), self.screen, path='data/menu.png')
+		self.button_menu = Button((30, 30), (30, 30), self.screen, path='Games/Tanks_objects/data/images/menu.png')
 		self.enemies = []
 		self.fires = []
 		self.main_tank_can_move = True
@@ -72,7 +73,7 @@ class Tanks:
 
 		# Инициализация уровня
 		self.walls = []
-		self.level = self.levels[self.level_num - 1](self)
+		self.level = Levels.Level(self, f'Games/Tanks_objects/data/levels/level{self.level_num}.csv')
 		for y in range(len(self.level.board)):
 			for x in range(len(self.level.board[0])):
 				if self.level.board[y][x] != '0' and self.level.vis_board[y][x] != 'sh':
@@ -138,11 +139,16 @@ class Tanks:
 					if self.button_down and event.key in self.names_buttons[self.button_down]:
 						self.button_down = ''
 
+					if event.key == pg.K_n:
+						mods = pg.key.get_mods()
+						if mods & pg.KMOD_CTRL:
+							create = Creater(self)
+
 			self.main_tank_can_move = True
 
 			if self.space_is_down and self.frame_counter_shot == self.step_shot:
 				self.frame_counter_shot = 0
-				self.fires.append(Fire(self, 'data/Tanks/fire1.png', (
+				self.fires.append(Fire(self, 'Games/Tanks_objects/data/images/fire1.png', (
 					self.main_tank.rect.x + self.main_tank.size // 2,
 					self.main_tank.rect.y + self.main_tank.size // 2), self.main_tank.vector_x, self.main_tank.vector_y))
 				self.fires_group.add(self.fires[-1])
@@ -186,7 +192,7 @@ class Tanks:
 		self.is_pause = True
 		self.pause = Pause((config.WIDTH // 2, config.HEIGHT // 5), self.screen)
 		self.pause_group = self.tanks_group
-		self.pause_group.add(self.fires_group)
+		self.pause_group.add(self.groups)
 		for i in self.pause.buttons:
 			self.pause_group.add(i)
 		for enemy in self.enemies:

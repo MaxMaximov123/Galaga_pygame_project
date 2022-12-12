@@ -1,4 +1,4 @@
-from Objects.Main_window import MainWindow
+from Games.Main_window import MainWindow
 
 objects = {}
 

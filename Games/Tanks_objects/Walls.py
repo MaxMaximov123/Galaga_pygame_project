@@ -1,5 +1,5 @@
 import pygame as pg
-from Objects import config
+from Games import config
 
 
 class Brick(pg.sprite.Sprite):
@@ -10,11 +10,11 @@ class Brick(pg.sprite.Sprite):
 		self.game = game
 		self.pos = pos
 		self.type_ = type_
-		self.image0 = pg.image.load('data/Tanks/brick.png').convert_alpha()  # картинка спрайта  # контур спрайта
-		self.image_r = pg.image.load('data/Tanks/brickR.png').convert_alpha()  # картинка спрайта  # контур спрайта
-		self.image_l = pg.image.load('data/Tanks/brickL.png').convert_alpha()  # картинка спрайта  # контур спрайта
-		self.image_u = pg.image.load('data/Tanks/brickU.png').convert_alpha()  # картинка спрайта  # контур спрайта
-		self.image_d = pg.image.load('data/Tanks/brickD.png').convert_alpha()  # картинка спрайта  # контур спрайта
+		self.image0 = pg.image.load('Games/Tanks_objects/data/images/brick.png').convert_alpha()  # картинка спрайта  # контур спрайта
+		self.image_r = pg.image.load('Games/Tanks_objects/data/images/brickR.png').convert_alpha()  # картинка спрайта  # контур спрайта
+		self.image_l = pg.image.load('Games/Tanks_objects/data/images/brickL.png').convert_alpha()  # картинка спрайта  # контур спрайта
+		self.image_u = pg.image.load('Games/Tanks_objects/data/images/brickU.png').convert_alpha()  # картинка спрайта  # контур спрайта
+		self.image_d = pg.image.load('Games/Tanks_objects/data/images/brickD.png').convert_alpha()  # картинка спрайта  # контур спрайта
 		self.image0 = pg.transform.scale(self.image0, self.base_size)
 		self.image_r = pg.transform.scale(self.image_r, (self.base_size[0] // 2, self.base_size[1]))
 		self.image_l = pg.transform.scale(self.image_l, (self.base_size[0] // 2, self.base_size[1]))
@@ -152,11 +152,11 @@ class Iron(pg.sprite.Sprite):
 		self.game = game
 		self.pos = pos
 		self.type_ = type_
-		self.image0 = pg.image.load('data/Tanks/iron.png').convert_alpha()  # картинка спрайта  # контур спрайта
-		self.image_r = pg.image.load('data/Tanks/ironR.png').convert_alpha()  # картинка спрайта  # контур спрайта
-		self.image_l = pg.image.load('data/Tanks/ironL.png').convert_alpha()  # картинка спрайта  # контур спрайта
-		self.image_u = pg.image.load('data/Tanks/ironU.png').convert_alpha()  # картинка спрайта  # контур спрайта
-		self.image_d = pg.image.load('data/Tanks/ironD.png').convert_alpha()  # картинка спрайта  # контур спрайта
+		self.image0 = pg.image.load('Games/Tanks_objects/data/images/iron.png').convert_alpha()  # картинка спрайта  # контур спрайта
+		self.image_r = pg.image.load('Games/Tanks_objects/data/images/ironR.png').convert_alpha()  # картинка спрайта  # контур спрайта
+		self.image_l = pg.image.load('Games/Tanks_objects/data/images/ironL.png').convert_alpha()  # картинка спрайта  # контур спрайта
+		self.image_u = pg.image.load('Games/Tanks_objects/data/images/ironU.png').convert_alpha()  # картинка спрайта  # контур спрайта
+		self.image_d = pg.image.load('Games/Tanks_objects/data/images/ironD.png').convert_alpha()  # картинка спрайта  # контур спрайта
 		self.image0 = pg.transform.scale(self.image0, self.base_size)
 		self.image_r = pg.transform.scale(self.image_r, (self.base_size[0] // 2, self.base_size[1]))
 		self.image_l = pg.transform.scale(self.image_l, (self.base_size[0] // 2, self.base_size[1]))
@@ -220,7 +220,7 @@ class IronXZ(pg.sprite.Sprite):
 		self.game = game
 		self.pos = pos
 		self.type_ = type_
-		self.image0 = pg.image.load('data/Tanks/iron_xz.png').convert_alpha()  # картинка спрайта  # контур спрайта
+		self.image0 = pg.image.load('Games/Tanks_objects/data/images/iron_xz.png').convert_alpha()  # картинка спрайта  # контур спрайта
 		self.image0 = pg.transform.scale(self.image0, self.base_size)
 		self.update()
 
@@ -257,7 +257,7 @@ class Water(pg.sprite.Sprite):
 		self.game = game
 		self.pos = pos
 		self.type_ = type_
-		self.image0 = pg.image.load('data/Tanks/water.png').convert_alpha()  # картинка спрайта  # контур спрайта
+		self.image0 = pg.image.load('Games/Tanks_objects/data/images/water.png').convert_alpha()  # картинка спрайта  # контур спрайта
 		self.image0 = pg.transform.scale(self.image0, self.base_size)
 		self.update()
 
@@ -295,7 +295,7 @@ class Bush(pg.sprite.Sprite):
 		self.game = game
 		self.pos = pos
 		self.type_ = type_
-		self.image0 = pg.image.load('data/Tanks/bush.png').convert_alpha()  # картинка спрайта  # контур спрайта
+		self.image0 = pg.image.load('Games/Tanks_objects/data/images/bush.png').convert_alpha()  # картинка спрайта  # контур спрайта
 		self.image0 = pg.transform.scale(self.image0, self.base_size)
 		self.update()
 

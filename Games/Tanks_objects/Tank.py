@@ -1,5 +1,5 @@
 import pygame as pg
-from Objects import config
+from Games import config
 
 
 class Tank(pg.sprite.Sprite):

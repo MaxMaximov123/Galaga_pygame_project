@@ -1,9 +1,9 @@
 import pygame as pg
-from Objects import config
+from Games import config
 
 
 class Button(pg.sprite.Sprite):
-	def __init__(self, pos, size, screen, path='data/None.png', text=None, text_size=40):
+	def __init__(self, pos, size, screen, path='Games/Galaga_objects/data/images/None.png', text=None, text_size=40):
 		pg.sprite.Sprite.__init__(self)
 		self.size = size  # размер кнопки
 		self.text_size = text_size

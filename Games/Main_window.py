@@ -1,8 +1,8 @@
 import pygame as pg
-from Objects.Galaga_objects.Cursor import Cursor
-from Objects.Galaga_objects.Galaga import Galaga
-from Objects import config
-from Objects.Tanks_objects.Tanks import Tanks
+from Games.Galaga_objects.Cursor import Cursor
+from Games.Galaga_objects.Galaga import Galaga
+from Games import config
+from Games.Tanks_objects.Tanks import Tanks
 
 
 class MainWindow:
