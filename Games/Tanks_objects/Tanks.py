@@ -19,7 +19,7 @@ class Tanks:
 		pg.mixer.pre_init(44100, -16, 1, 512)
 		pg.init()
 		pg.display.set_caption('Tanks')
-		self.level_num = 3  # НОМЕР УРОВНЯ
+		self.level_num = 4  # НОМЕР УРОВНЯ
 		self.levels = ['Games/Tanks_objects/data/levels/level0.csv']  # ОБЪЕКТЫ УРОВНИ
 		self.main_win = main_win  # СТАРТОВОЕ ОКНО
 		self.button_down = ''  # КАКАЯ КНОПКА НАЖАТА

@@ -10,24 +10,21 @@ from Games.Tanks_objects import Walls
 class Level:
 	def __init__(self, game, path):
 		self.size = config.SIZE_BOARD_FOR_TANKS
-		# self.vis_board = [['0' for x in range(self.size[0])] for y in range(self.size[1])]
-		# self.vis_board = [
-		# 	['0', '0', '0', '0', '0', 'b', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'b'],
-		# 	['0', '0', 'br', '0', '0', 'b', '0', '0', 'b', 'b', 'b', 'b', 'b', 'b', '0', '0'],
-		# 	['0', '0', 'bl', '0', '0', 'b', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
-		# 	['0', '0', 'bu', 'bd', 'bu', 'b', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
-		# 	['0', '0', 'il', '0', '0', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', '0', '0', '0'],
-		# 	['0', '0', 'il', '0', '0', 'b', '0', '0', '0', '0', 'bd', 'bd', '0', '0', '0', '0'],
-		# 	['0', 'i', 'i', '0', 'b', 'b', '0', '0', '0', '0', '0', '0', 'bd', '0', '0', '0'],
-		# 	['0', '0', '0', 'bd', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'bd', '0', '0'],
-		# 	['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'bd', '0'],
-		# ]
+		self.vis_board1 = [['0' for x in range(self.size[0])] for y in range(self.size[1])]
+
 
 		with open(path, encoding="utf8") as csvfile:
-			self.vis_board = list(csv.reader(csvfile, delimiter='\t', quotechar='"'))
+			self.vis_board1 = list(csv.reader(csvfile, delimiter='\t', quotechar='"'))
 
-		# for i in self.board:
-		# 	print(i)
+		self.vis_board = []
+		for y in range(self.size[1]):
+			row = []
+			for x in range(self.size[0]):
+				if y >= len(self.vis_board1) or x >= len(self.vis_board1[0]):
+					row.append('0')
+				else:
+					row.append(self.vis_board1[y][x])
+			self.vis_board.append(row)
 		self.board = copy.deepcopy(self.vis_board)
 
 		for y in range(len(self.vis_board)):

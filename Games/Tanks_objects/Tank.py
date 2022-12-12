@@ -7,7 +7,7 @@ class Tank(pg.sprite.Sprite):
 		pg.sprite.Sprite.__init__(self)
 		self.pos = pos
 		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]  # размер танка
-		self.speed = config.FPS * 1 * self.size / 60  # пикселе в секунду
+		self.speed = config.FPS * 1  # пикселе в секунду
 		self.base_image = pg.image.load(path).convert_alpha()  # картинка спрайта
 		self.base_image = pg.transform.scale(self.base_image, (self.size, self.size))
 		self.image = self.base_image
