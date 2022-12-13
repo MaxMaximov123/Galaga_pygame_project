@@ -4,7 +4,7 @@ from Games import config
 
 class Brick(pg.sprite.Sprite):
 	def __init__(self, game, pos, type_='b'):
-		pg.sprite.Sprite.__init__(self)
+		super().__init__(game.walls_group, game.all_groups)
 		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0], config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]
 		self.base_size = self.size
 		self.game = game
@@ -25,7 +25,6 @@ class Brick(pg.sprite.Sprite):
 
 	def update(self, *args):
 		self.render()
-
 		self.tank_can_move()
 
 	def is_collided_with(self, sprite):
@@ -33,86 +32,45 @@ class Brick(pg.sprite.Sprite):
 
 
 	def tank_can_move(self):
-		if self.game.main_tank.is_collided_with(self):
-			self.game.main_tank_can_move = False
+		if pg.sprite.spritecollideany(self, self.game.tanks_group):
+			pg.sprite.spritecollideany(self, self.game.tanks_group).set_can_move(False)
 
-	def destruction(self, x, y):
-		if self.game.main_tank.rect.y + 5 >= self.game.level.board[y][x].rect.y + self.game.level.board[y][x].size[1]:
-			if self.game.level.board[y][x].type_ == 'b':
-				self.game.level.board[y][x].type_ = 'bu'
-				self.game.level.vis_board[y][x] = 'bu'
+	def destruction(self):
+		if self.game.main_tank.rect.y + 5 >= self.rect.y + self.size[1]:
+			if self.type_ == 'b':
+				self.type_ = 'bu'
 				return True
-		if self.game.main_tank.rect.y + self.game.main_tank.size <= self.game.level.board[y][x].rect.y:
-			if self.game.level.board[y][x].type_ == 'b':
-				self.game.level.board[y][x].type_ = 'bd'
-				self.game.level.vis_board[y][x] = 'bd'
+		if self.game.main_tank.rect.y + self.game.main_tank.size <= self.rect.y:
+			if self.type_ == 'b':
+				self.type_ = 'bd'
 				return True
 
 
-		if self.game.level.board[y][x].type_ == 'bu':
-			self.game.walls.remove([x, y])
-			self.game.level.board[y][x].kill()
-			self.game.level.board[y][x] = self.game.level.vis_board[y][x] = '0'
+		if self.type_ == 'bu':
+			self.kill()
 			return True
-		if self.game.level.board[y][x].type_ == 'bd':
-			self.game.walls.remove([x, y])
-			self.game.level.board[y][x].kill()
-			self.game.level.board[y][x] = self.game.level.vis_board[y][x] = '0'
+		if self.type_ == 'bd':
+			self.kill()
 			return True
 
 
-		if self.game.main_tank.rect.x >= self.game.level.board[y][x].rect.x + self.game.level.board[y][x].size[0]:
-			if self.game.level.board[y][x].type_ == 'b':
-				self.game.level.board[y][x].type_ = 'bl'
-				self.game.level.vis_board[y][x] = 'bl'
+		if self.game.main_tank.rect.x >= self.rect.x + self.size[0]:
+			if self.type_ == 'b':
+				self.type_ = 'bl'
 				return True
-		if self.game.main_tank.rect.x + self.game.main_tank.size <= self.game.level.board[y][x].rect.x:
-			if self.game.level.board[y][x].type_ == 'b':
-				self.game.level.board[y][x].type_ = 'br'
-				self.game.level.vis_board[y][x] = 'br'
+		if self.game.main_tank.rect.x + self.game.main_tank.size <= self.rect.x:
+			if self.type_ == 'b':
+				self.type_ = 'br'
 				return True
 
 
-		if self.game.level.board[y][x].type_ == 'br':
-			self.game.walls.remove([x, y])
-			self.game.level.board[y][x].kill()
-			self.game.level.board[y][x] = self.game.level.vis_board[y][x] = '0'
+		if self.type_ == 'br':
+			self.kill()
 			return True
-		if self.game.level.board[y][x].type_ == 'bl':
-			self.game.walls.remove([x, y])
-			self.game.level.board[y][x].kill()
-			self.game.level.board[y][x] = self.game.level.vis_board[y][x] = '0'
+		if self.type_ == 'bl':
+			self.kill()
 			return True
 
-
-	def render(self):
-		if self.type_ == 'b':
-			self.image = self.image0
-			self.rect = self.image.get_rect(center=self.pos)
-			self.rect.x, self.rect.y = self.base_size[0] * self.pos[0], self.base_size[1] * self.pos[1]
-			self.size = self.base_size
-		elif self.type_ == 'br':
-			self.image = self.image_r
-			self.rect = self.image.get_rect()
-			self.rect.x, self.rect.y = self.base_size[0] * self.pos[0] + self.base_size[0] // 2, self.base_size[1] * self.pos[1]
-			self.size = self.base_size[0] // 2, self.base_size[1]
-		elif self.type_ == 'bd':
-			self.image = self.image_d
-			self.rect = self.image.get_rect()
-			self.rect.x, self.rect.y = self.base_size[0] * self.pos[0], self.base_size[1] * self.pos[1] + self.base_size[1] // 2
-			self.size = self.base_size[0], self.base_size[1] // 2
-
-		elif self.type_ == 'bl':
-			self.image = self.image_l
-			self.rect = self.image.get_rect()
-			self.rect.x, self.rect.y = self.base_size[0] * self.pos[0], self.base_size[1] * self.pos[1]
-			self.size = self.base_size[0] // 2, self.base_size[1]
-
-		elif self.type_ == 'bu':
-			self.image = self.image_u
-			self.rect = self.image.get_rect()
-			self.rect.x, self.rect.y = self.base_size[0] * self.pos[0], self.base_size[1] * self.pos[1]
-			self.size = self.base_size[0], self.base_size[1] // 2
 
 	def render(self):
 		if self.type_ == 'b':
@@ -146,7 +104,7 @@ class Brick(pg.sprite.Sprite):
 
 class Iron(pg.sprite.Sprite):
 	def __init__(self, game, pos, type_='i'):
-		pg.sprite.Sprite.__init__(self)
+		super().__init__(game.walls_group, game.all_groups)
 		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0], config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]
 		self.base_size = self.size
 		self.game = game
@@ -175,10 +133,11 @@ class Iron(pg.sprite.Sprite):
 
 
 	def tank_can_move(self):
-		if self.game.main_tank.is_collided_with(self):
-			self.game.main_tank_can_move = False
+		if pg.sprite.spritecollideany(self, self.game.tanks_group):
+			pg.sprite.spritecollideany(self, self.game.tanks_group).set_can_move(False)
 
-	def destruction(self, x, y):
+
+	def destruction(self):
 		return True
 
 
@@ -214,7 +173,7 @@ class Iron(pg.sprite.Sprite):
 
 class IronXZ(pg.sprite.Sprite):
 	def __init__(self, game, pos, type_='xz'):
-		pg.sprite.Sprite.__init__(self)
+		super().__init__(game.walls_group, game.all_groups)
 		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0], config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]
 		self.base_size = self.size
 		self.game = game
@@ -237,7 +196,7 @@ class IronXZ(pg.sprite.Sprite):
 		pass
 
 
-	def destruction(self, x, y):
+	def destruction(self):
 		return False
 
 
@@ -251,7 +210,7 @@ class IronXZ(pg.sprite.Sprite):
 
 class Water(pg.sprite.Sprite):
 	def __init__(self, game, pos, type_='w'):
-		pg.sprite.Sprite.__init__(self)
+		super().__init__(game.walls_group, game.all_groups)
 		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0], config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]
 		self.base_size = self.size
 		self.game = game
@@ -271,11 +230,11 @@ class Water(pg.sprite.Sprite):
 
 
 	def tank_can_move(self):
-		if self.game.main_tank.is_collided_with(self):
-			self.game.main_tank_can_move = False
+		if pg.sprite.spritecollideany(self, self.game.tanks_group):
+			pg.sprite.spritecollideany(self, self.game.tanks_group).set_can_move(False)
 
 
-	def destruction(self, x, y):
+	def destruction(self):
 		return False
 
 
@@ -289,7 +248,7 @@ class Water(pg.sprite.Sprite):
 
 class Bush(pg.sprite.Sprite):
 	def __init__(self, game, pos, type_='sh'):
-		pg.sprite.Sprite.__init__(self)
+		super().__init__(game.bush_group, game.all_groups, game.walls_group)
 		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0], config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]
 		self.base_size = self.size
 		self.game = game
@@ -312,7 +271,7 @@ class Bush(pg.sprite.Sprite):
 		pass
 
 
-	def destruction(self, x, y):
+	def destruction(self):
 		return False
 
 
