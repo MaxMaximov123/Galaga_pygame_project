@@ -42,7 +42,8 @@ class MainTank(pg.sprite.Sprite):
 			obj.remove(self)
 			if obj:
 				self.set_can_move(False)
-				self.update()
+				self.x -= self.vector_x
+				self.y -= self.vector_y
 				return False
 		self.set_can_move(True)
 		return True
