@@ -128,5 +128,9 @@ class Creater:
                 screen.blit(text, (config.WIDTH // 2 - text.get_width() // 2, config.HEIGHT // 2 - text.get_height() // 2))
                 pygame.display.flip()
                 time.sleep(2)
+                for i in all_sprites:
+                    i.kill()
                 exit()
             pygame.display.flip()
+        for i in all_sprites:
+            i.kill()

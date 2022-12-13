@@ -3,8 +3,8 @@ from Games import config
 
 
 class Fire(pg.sprite.Sprite):
-	def __init__(self, game, pos, vector_x=0, vector_y=1):
-		super().__init__(game.fires_group, game.all_groups)
+	def __init__(self, game, pos, from_main_tank=False, vector_x=0, vector_y=1):
+		super().__init__(game.fires_group)
 		self.step_show = 1
 		self.frame_counter = self.step_show // config.FPS
 		self.size = 20, 40  # размер пули
@@ -12,6 +12,7 @@ class Fire(pg.sprite.Sprite):
 		self.game = game
 		self.image = pg.image.load('Games/Tanks_objects/data/images/fire1.png').convert_alpha()  # картинка спрайта  # контур спрайта
 		self.can_move = True
+		self.from_main_tank = from_main_tank
 		self.vector_x = vector_x * self.speed
 		self.vector_y = vector_y * self.speed
 		self.image = pg.transform.scale(self.image, self.size)
@@ -43,6 +44,16 @@ class Fire(pg.sprite.Sprite):
 			if pg.sprite.spritecollideany(self, self.game.walls_group):  # ПРОВЕРКА КАСАНИЯ СО СТЕНОЙ
 				if pg.sprite.spritecollideany(self, self.game.walls_group).destruction():  # ИЗМЕНЕНИЕ СТЕНЫ ПРИ КАСАНИИ
 					self.kill()
+
+			if (
+					pg.sprite.spritecollideany(self, self.game.tanks_group) and
+					((
+							not self.from_main_tank and
+							pg.sprite.spritecollideany(self, self.game.tanks_group) == self.game.main_tank) or (
+							self.from_main_tank and
+							pg.sprite.spritecollideany(self, self.game.tanks_group) != self.game.main_tank))):  # ПРОВЕРКА КАСАНИЯ С ТАНКОМ
+				pg.sprite.spritecollideany(self, self.game.tanks_group).hp -= 1  # ИЗМЕНЕНИЕ КОЛ-ВА ЖИЗНЕЙ
+				self.kill()
 
 
 	def is_collided_with(self, sprite):

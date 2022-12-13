@@ -2,9 +2,16 @@ import pygame as pg
 from Games import config
 
 
-class Brick(pg.sprite.Sprite):
+class Wall:
+	can_move = True
+
+	def set_can_move(self, f):
+		Wall.can_move = f
+
+
+class Brick(pg.sprite.Sprite, Wall):
 	def __init__(self, game, pos, type_='b'):
-		super().__init__(game.walls_group, game.all_groups)
+		super().__init__(game.walls_group)
 		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0], config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]
 		self.base_size = self.size
 		self.game = game
@@ -20,6 +27,7 @@ class Brick(pg.sprite.Sprite):
 		self.image_l = pg.transform.scale(self.image_l, (self.base_size[0] // 2, self.base_size[1]))
 		self.image_d = pg.transform.scale(self.image_d, (self.base_size[0], self.base_size[1] // 2))
 		self.image_u = pg.transform.scale(self.image_u, (self.base_size[0], self.base_size[1] // 2))
+		self.can_move = True
 		self.update()
 
 
@@ -102,9 +110,9 @@ class Brick(pg.sprite.Sprite):
 			self.size = self.base_size[0], self.base_size[1] // 2
 
 
-class Iron(pg.sprite.Sprite):
+class Iron(pg.sprite.Sprite, Wall):
 	def __init__(self, game, pos, type_='i'):
-		super().__init__(game.walls_group, game.all_groups)
+		super().__init__(game.walls_group)
 		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0], config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]
 		self.base_size = self.size
 		self.game = game
@@ -120,6 +128,7 @@ class Iron(pg.sprite.Sprite):
 		self.image_l = pg.transform.scale(self.image_l, (self.base_size[0] // 2, self.base_size[1]))
 		self.image_d = pg.transform.scale(self.image_d, (self.base_size[0], self.base_size[1] // 2))
 		self.image_u = pg.transform.scale(self.image_u, (self.base_size[0], self.base_size[1] // 2))
+		self.can_move = True
 		self.update()
 
 
@@ -171,9 +180,9 @@ class Iron(pg.sprite.Sprite):
 			self.size = self.base_size[0], self.base_size[1] // 2
 
 
-class IronXZ(pg.sprite.Sprite):
+class IronXZ(pg.sprite.Sprite, Wall):
 	def __init__(self, game, pos, type_='xz'):
-		super().__init__(game.walls_group, game.all_groups)
+		super().__init__(game.walls_group)
 		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0], config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]
 		self.base_size = self.size
 		self.game = game
@@ -181,6 +190,7 @@ class IronXZ(pg.sprite.Sprite):
 		self.type_ = type_
 		self.image0 = pg.image.load('Games/Tanks_objects/data/images/iron_xz.png').convert_alpha()  # картинка спрайта  # контур спрайта
 		self.image0 = pg.transform.scale(self.image0, self.base_size)
+		self.can_move = True
 		self.update()
 
 
@@ -208,9 +218,9 @@ class IronXZ(pg.sprite.Sprite):
 			self.size = self.base_size
 
 
-class Water(pg.sprite.Sprite):
+class Water(pg.sprite.Sprite, Wall):
 	def __init__(self, game, pos, type_='w'):
-		super().__init__(game.walls_group, game.all_groups)
+		super().__init__(game.walls_group)
 		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0], config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]
 		self.base_size = self.size
 		self.game = game
@@ -218,6 +228,7 @@ class Water(pg.sprite.Sprite):
 		self.type_ = type_
 		self.image0 = pg.image.load('Games/Tanks_objects/data/images/water.png').convert_alpha()  # картинка спрайта  # контур спрайта
 		self.image0 = pg.transform.scale(self.image0, self.base_size)
+		self.can_move = True
 		self.update()
 
 
@@ -246,9 +257,9 @@ class Water(pg.sprite.Sprite):
 			self.size = self.base_size
 
 
-class Bush(pg.sprite.Sprite):
+class Bush(pg.sprite.Sprite, Wall):
 	def __init__(self, game, pos, type_='sh'):
-		super().__init__(game.bush_group, game.all_groups, game.walls_group)
+		super().__init__(game.bush_group, game.walls_group)
 		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0], config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]
 		self.base_size = self.size
 		self.game = game
@@ -256,6 +267,8 @@ class Bush(pg.sprite.Sprite):
 		self.type_ = type_
 		self.image0 = pg.image.load('Games/Tanks_objects/data/images/bush.png').convert_alpha()  # картинка спрайта  # контур спрайта
 		self.image0 = pg.transform.scale(self.image0, self.base_size)
+		self.image0.set_colorkey((0, 0, 0))
+		self.can_move = True
 		self.update()
 
 

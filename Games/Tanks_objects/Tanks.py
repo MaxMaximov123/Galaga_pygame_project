@@ -7,13 +7,14 @@ from Games.pause import Pause
 from Games.Tanks_objects.Fire import Fire
 import random
 from Games.Tanks_objects import Levels
-from Games.Tanks_objects.Tank import MainTank
+from Games.Tanks_objects.Tank import MainTank, EnemyTank
 from Games.Tanks_objects.Create_new_level import Creater
 # from Main_window import MainWindow
 
 
 class Tanks:
 	level_num = 1   # НОМЕР УРОВНЯ
+	max_count_enemies = 10
 
 	def __init__(self, main_win=None):
 		# Базовые параметры для всех игр
@@ -67,6 +68,8 @@ class Tanks:
 		self.button_menu = Button((30, 30), (30, 30), self.screen, path='Games/Tanks_objects/data/images/menu.png')
 		self.enemies = []
 		self.fires = []
+		self.MYEVENTTYPE = pg.USEREVENT + 1
+		pg.time.set_timer(self.MYEVENTTYPE, 2000)
 		self.enemies_place_left = self.size[0] // 12
 		self.enemies_place_up = self.size[1] // 10
 		self.enemies_matrix = [[0 for j in range(
@@ -77,6 +80,7 @@ class Tanks:
 		# Инициализация уровня
 		self.walls = []
 		self.fields_to_generate = []  # СПИСОК ПОЛЕЙ ДЛЯ ГЕНЕРАЦИИ ТАНКОВ
+		self.coords_in_board = []
 		self.level = Levels.Level(self, f'Games/Tanks_objects/data/levels/level{self.level_num}.csv')  # ПУТЬ К ФАЙЛУ УРОВНЯ
 
 
@@ -139,17 +143,23 @@ class Tanks:
 						if mods & pg.KMOD_CTRL:
 							create = Creater(self)
 
+				if event.type == self.MYEVENTTYPE:
+					if len(self.tanks_group) <= Tanks.max_count_enemies:
+						self.generate_new_enemy(random.randint(0, 3))
+
 			if self.space_is_down and self.frame_counter_shot == self.step_shot:  # СОЗДАНИЕ ПУЛИ ПРИ НАЖАТИИ ПРОБЕЛА
 				self.frame_counter_shot = 0
 				Fire(self, (
 					self.main_tank.rect.x + self.main_tank.size // 2,
 					self.main_tank.rect.y + self.main_tank.size // 2),
+					True,
 					self.main_tank.vector_x, self.main_tank.vector_y)
 
 			if not self.is_pause:  # УСЛОВИЕ НА ЗАПУЩЕННУЮ ИГРУ
 				# ОБНОВЛЯЕМ ВСЕ ГРУППЫ
-				self.all_groups.draw(self.screen)
-				self.all_groups.update()
+				for group in self.groups:
+					group.draw(self.screen)
+					group.update()
 
 			else:
 				self.pause_group.draw(self.screen)
@@ -178,29 +188,35 @@ class Tanks:
 	def start_pause(self):
 		self.is_pause = True
 		self.pause = Pause((config.WIDTH // 2, config.HEIGHT // 5), self.screen)
-		self.pause_group = self.tanks_group
 		self.pause_group.add(self.groups)
-		for i in self.pause.buttons:
-			self.pause_group.add(i)
-		for enemy in self.enemies:
-			enemy.can_move = False
-
-		for f in self.fires:
+		self.pause_group.add(self.pause.buttons)
+		for f in self.fires_group:
 			f.set_can_move(False)
 
 	def start(self):
 		self.is_pause = False
 		self.pause_group.remove(*self.pause.buttons)
-		for enemy in self.enemies:
-			enemy.can_move = True
-			enemy.move = 0
 
-		for f in self.fires:
+		for f in self.fires_group:
 			f.set_can_move(True)
 
 
 	def close(self):
 		pg.quit()
+
+
+	def generate_new_enemy(self, power):
+		self.coords_in_board = []
+		for row in range(len(self.level.vis_board)):
+			for col in range(len(self.level.vis_board[0])):
+				if self.level.vis_board[row][col] == '0':
+					self.coords_in_board.append([col, row])
+
+		if len(self.tanks_group) <= Tanks.max_count_enemies:
+			enemy_tank = EnemyTank(random.choice(self.coords_in_board), self, power)
+			while not enemy_tank.tank_can_move() and self.coords_in_board:
+				enemy_tank.kill()
+				enemy_tank = EnemyTank(random.choice(self.coords_in_board), self, power)
 
 
 if __name__ == '__main__':

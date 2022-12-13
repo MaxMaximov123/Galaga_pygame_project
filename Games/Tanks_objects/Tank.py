@@ -4,7 +4,7 @@ from Games import config
 
 class MainTank(pg.sprite.Sprite):
 	def __init__(self, pos, game, power=0):
-		super().__init__(game.tanks_group, game.all_groups)
+		super().__init__(game.tanks_group)
 		self.pos = pos
 		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]  # размер танка
 		self.speed = config.FPS * 1  # пикселе в секунду
@@ -18,12 +18,24 @@ class MainTank(pg.sprite.Sprite):
 		self.vector_x = 0
 		self.vector_y = -1
 		self.can_move = True
+		self.hp = power + 1
 
 	def set_can_move(self, f):
 		self.can_move = f
 
 	def update(self, *args):
-		pass
+		self.tank_can_move()
+		if self.hp <= 0:
+			self.kill()
+
+
+	def tank_can_move(self):
+		if (
+				pg.sprite.spritecollideany(self, self.game.tanks_group) and
+				pg.sprite.spritecollideany(self, self.game.tanks_group) != self):
+			pg.sprite.spritecollideany(self, self.game.tanks_group).set_can_move(False)
+			return False
+		return True
 
 
 	def left_move(self):  # движение влево
@@ -60,6 +72,14 @@ class MainTank(pg.sprite.Sprite):
 		return self.rect.colliderect(sprite.rect)
 
 
-class EnemyTank0(MainTank):
-	def __init__(self, power, pos, game):
-		super().__init__(power, pos, game)
+class EnemyTank(MainTank):
+	def __init__(self, pos, game, power):
+		super().__init__(pos, game, 0)
+		self.base_image = pg.image.load(f'Games/Tanks_objects/data/images/enemy_tank{power}.png').convert_alpha()  # картинка спрайта
+		self.base_image = pg.transform.scale(self.base_image, (self.size, self.size))
+		self.image = self.base_image
+		self.image.set_colorkey(-1)
+		self.rect = self.image.get_rect()
+		self.rect.x, self.rect.y = (
+			pos[0] * config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0],
+			pos[1] * config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0])

@@ -10,6 +10,7 @@ class Button(pg.sprite.Sprite):
 		self.screen = screen
 		self.text = text
 		self.pos = pos
+		self.can_move = True
 		if path:
 			self.image = pg.image.load(path).convert_alpha()  # картинка спрайта
 			self.image = pg.transform.scale(self.image, (self.size[0], self.size[1]))
@@ -27,3 +28,6 @@ class Button(pg.sprite.Sprite):
 			font = pg.font.SysFont('monospace', self.text_size)
 			text = font.render(self.text, True, (194, 152, 0))
 			self.screen.blit(text, (self.pos[0] - text.get_width() // 2, self.pos[1] - text.get_height() // 2))
+
+	def set_can_move(self, f):
+		self.can_move = f
