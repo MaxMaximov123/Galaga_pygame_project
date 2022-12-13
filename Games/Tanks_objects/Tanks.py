@@ -168,11 +168,6 @@ class Tanks:
 			if self.button_down:  # НАЖАТИЕ ОДНОЙ ИЗ КНОПОК ДВИЖЕНИЯ
 				if self.main_tank.can_move:
 					self.main_tank_moves[self.button_down]()
-					self.main_tank.set_can_move(False)
-				else:  # СДВИГ В ПРОТИВОПОЛОЖНУЮ СТОРОНУ ПРИ КАСАНИИ
-					self.main_tank.rect.x -= self.main_tank.vector_x
-					self.main_tank.rect.y -= self.main_tank.vector_y
-					self.main_tank.set_can_move(False)
 
 
 			self.frame_counter_shot += 1  # СЧЕТЧИК КАДРОВ
