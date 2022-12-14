@@ -53,6 +53,7 @@ class Fire(pg.sprite.Sprite):
 							self.from_main_tank and
 							pg.sprite.spritecollideany(self, self.game.tanks_group) != self.game.main_tank))):  # ПРОВЕРКА КАСАНИЯ С ТАНКОМ
 				pg.sprite.spritecollideany(self, self.game.tanks_group).hp -= 1  # ИЗМЕНЕНИЕ КОЛ-ВА ЖИЗНЕЙ
+				pg.sprite.spritecollideany(self, self.game.tanks_group).draw_hp()
 				self.kill()
 
 
