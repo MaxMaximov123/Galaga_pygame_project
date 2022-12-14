@@ -47,9 +47,10 @@ class MainTank(pg.sprite.Sprite):
 		if self.frame_counter >= config.FPS:
 			self.frame_counter = 0
 		if not self.can_move:
-			self.x -= self.vector_x
-			self.y -= self.vector_y
-			# self.set_can_move(True)
+			if config.WIDTH > self.x - self.vector_x + self.size >= self.size:
+				self.x -= self.vector_x
+			if config.HEIGHT > self.y - self.vector_y + self.size >= self.size:
+				self.y -= self.vector_y
 		if self.hp <= 0 and self == self.game.main_tank:
 			self.game.game_over()
 			self.kill()
