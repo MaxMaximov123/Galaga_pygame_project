@@ -55,7 +55,8 @@ class Fire(pg.sprite.Sprite):
 				pg.sprite.spritecollideany(self, self.game.tanks_group).hp -= 1  # ИЗМЕНЕНИЕ КОЛ-ВА ЖИЗНЕЙ
 				pg.sprite.spritecollideany(self, self.game.tanks_group).draw_hp()
 				self.kill()
-
+			if pg.sprite.spritecollideany(self, self.game.fires_group) != self:
+				self.kill()
 
 	def is_collided_with(self, sprite):
 		return self.rect.colliderect(sprite.rect)

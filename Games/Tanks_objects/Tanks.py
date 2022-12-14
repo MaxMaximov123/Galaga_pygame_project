@@ -9,6 +9,7 @@ import random
 from Games.Tanks_objects import Levels
 from Games.Tanks_objects.Tank import MainTank, EnemyTank
 from Games.Tanks_objects.Create_new_level import Creater
+from Games.Tanks_objects.Game_over import GameOver
 # from Main_window import MainWindow
 
 
@@ -49,7 +50,7 @@ class Tanks:
 
 		self.step_shot = config.FPS // 3   # сколько раз в секунду можно создавать выстрел
 		self.frame_counter_shot = self.step_shot
-		self.main_tank = MainTank((config.WIDTH // 2, config.HEIGHT // 15 * 13), self, power=0)
+		self.main_tank = MainTank((config.WIDTH // 2, config.HEIGHT // 15 * 13), self, power=3)
 		self.main_tank_moves = {
 			'left': self.main_tank.left_move,
 			'right': self.main_tank.right_move,
@@ -198,6 +199,13 @@ class Tanks:
 
 	def close(self):
 		pg.quit()
+
+	def game_over(self):
+		self.is_pause = True
+		self.pause_group.add(self.groups)
+		for f in self.fires_group:
+			f.set_can_move(False)
+		self.all_groups.add(GameOver(self))
 
 
 	def generate_new_enemy(self, power):

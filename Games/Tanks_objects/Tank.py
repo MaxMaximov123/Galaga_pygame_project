@@ -37,7 +37,7 @@ class MainTank(pg.sprite.Sprite):
 				self.frame_for_drawing_hp + config.FPS // self.time_og_showing_hp) % config.FPS == self.frame_counter:
 			self.frame_for_drawing_hp = None
 			if self.vector_x:
-				self.image = pg.transform.rotate(self.base_image, 90 * self.vector_x)
+				self.image = pg.transform.rotate(self.base_image, -90 * self.vector_x)
 			if self.vector_y:
 				if self.vector_y > 0:
 					self.image = pg.transform.rotate(self.base_image, 180 * self.vector_x)
@@ -50,7 +50,10 @@ class MainTank(pg.sprite.Sprite):
 			self.x -= self.vector_x
 			self.y -= self.vector_y
 			# self.set_can_move(True)
-		if self.hp <= 0:
+		if self.hp <= 0 and self == self.game.main_tank:
+			self.game.game_over()
+			self.kill()
+		elif self.hp <= 0:
 			self.kill()
 		self.rect.x, self.rect.y = self.x, self.y
 
@@ -121,7 +124,18 @@ class EnemyTank(MainTank):
 		self.shot_time = 1  # выстрелов в секунду
 		self.base_image = pg.image.load(f'Games/Tanks_objects/data/images/enemy_tank{power}.png').convert_alpha()  # картинка спрайта
 		self.base_image = pg.transform.scale(self.base_image, (self.size, self.size))
-		self.image = pg.transform.rotate(self.base_image, 0)
+		self.vector_x = random.randint(-1, 1)
+		if self.vector_x == 0:
+			self.vector_y = random.choice([-1, 1])
+		else:
+			self.vector_y = 0
+		if self.vector_x:  # ПОВОРОТ КАРТИНКИ
+			self.image = pg.transform.rotate(self.base_image, -90 * self.vector_x)
+		if self.vector_y:
+			if self.vector_y > 0:
+				self.image = pg.transform.rotate(self.base_image, 180 * self.vector_y)
+			else:
+				self.image = pg.transform.rotate(self.base_image, 0)
 		self.image.set_colorkey(-1)
 		self.rect = self.image.get_rect()
 		self.moves = [self.left_move, self.right_move, self.up_move, self.down_move]
@@ -151,7 +165,7 @@ class EnemyTank(MainTank):
 	def update(self, *args):
 		super().update(args)
 		if (config.FPS // self.shot_time) % config.FPS == self.frame_counter:
-			Fire(self.game , (
+			Fire(self.game, (
 				self.rect.x + self.size // 2,
 				self.rect.y + self.size // 2), False, self.vector_x, self.vector_y)
 		self.moves_by_power[self.power]()
