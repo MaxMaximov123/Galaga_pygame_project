@@ -134,7 +134,6 @@ class Iron(pg.sprite.Sprite, Wall):
 
 	def update(self, *args):
 		self.render()
-
 		self.tank_can_move()
 
 	def is_collided_with(self, sprite):

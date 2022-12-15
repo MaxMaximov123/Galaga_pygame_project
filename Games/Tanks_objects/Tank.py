@@ -47,10 +47,7 @@ class MainTank(pg.sprite.Sprite):
 		if self.frame_counter >= config.FPS:
 			self.frame_counter = 0
 		if not self.can_move:
-			if config.WIDTH > self.x - self.vector_x + self.size >= self.size:
-				self.x -= self.vector_x
-			if config.HEIGHT > self.y - self.vector_y + self.size >= self.size:
-				self.y -= self.vector_y
+			self.step_back(self)
 		if self.hp <= 0 and self == self.game.main_tank:
 			self.game.game_over()
 			self.kill()
@@ -64,9 +61,10 @@ class MainTank(pg.sprite.Sprite):
 			if self in obj:
 				obj.remove(self)
 				if obj:
+					# for i in obj:
+					# 	self.step_back(i, step=4, rev=True)
 					self.set_can_move(False)
-					self.x -= self.vector_x
-					self.y -= self.vector_y
+					# self.step_back(self, step=2)
 					return False
 		self.set_can_move(True)
 		return True
@@ -113,6 +111,19 @@ class MainTank(pg.sprite.Sprite):
 		self.frame_for_drawing_hp = self.frame_counter - 1
 
 
+	def step_back(self, tank, step=1, rev=False):
+		if rev:
+			if config.WIDTH > tank.x + tank.speed / config.FPS * tank.vector_x * 2 + tank.size >= tank.size:
+				tank.x += tank.speed / config.FPS * tank.vector_x * step
+			if config.HEIGHT > tank.y + tank.speed / config.FPS * tank.vector_y * 2 + tank.size >= tank.size:
+				tank.y += tank.speed / config.FPS * tank.vector_y * step
+		else:
+			if config.WIDTH > tank.x - tank.speed / config.FPS * tank.vector_x + tank.size >= tank.size:
+				tank.x -= tank.speed / config.FPS * tank.vector_x * step
+			if config.HEIGHT > tank.y - tank.speed / config.FPS * tank.vector_y + tank.size >= tank.size:
+				tank.y -= tank.speed / config.FPS * tank.vector_y * step
+
+
 class EnemyTank(MainTank):
 	def __init__(self, pos, game, power):
 		super().__init__(pos, game, power)
@@ -143,9 +154,14 @@ class EnemyTank(MainTank):
 		self.game = game
 
 	def move0(self):
-		pass
-		# self.tank_can_move()
-		# self.moves[0]()
+		if self.vector_x == 1:
+			self.right_move()
+		if self.vector_x == -1:
+			self.left_move()
+		if self.vector_y == 1:
+			self.down_move()
+		if self.vector_y == -1:
+			self.up_move()
 
 	def move1(self):
 		pass

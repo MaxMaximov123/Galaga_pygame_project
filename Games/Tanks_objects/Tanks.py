@@ -146,7 +146,7 @@ class Tanks:
 
 				if event.type == self.MYEVENTTYPE:
 					if len(self.tanks_group) <= Tanks.max_count_enemies:
-						self.generate_new_enemy(random.randint(0, 3))
+						self.generate_new_enemy(random.randint(0, 0))
 
 			if self.space_is_down and self.frame_counter_shot == self.step_shot:  # СОЗДАНИЕ ПУЛИ ПРИ НАЖАТИИ ПРОБЕЛА
 				self.frame_counter_shot = 0
