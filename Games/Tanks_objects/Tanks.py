@@ -15,7 +15,7 @@ from Games.Tanks_objects.Game_over import GameOver
 
 class Tanks:
 	level_num = 1   # НОМЕР УРОВНЯ
-	max_count_enemies = 10
+	max_count_enemies = 4
 
 	def __init__(self, main_win=None):
 		# Базовые параметры для всех игр
@@ -206,7 +206,6 @@ class Tanks:
 		for f in self.fires_group:
 			f.set_can_move(False)
 		self.all_groups.add(GameOver(self))
-
 
 	def generate_new_enemy(self, power):
 		self.coords_in_board = []

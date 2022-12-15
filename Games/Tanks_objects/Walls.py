@@ -43,7 +43,7 @@ class Brick(pg.sprite.Sprite, Wall):
 		if pg.sprite.spritecollideany(self, self.game.tanks_group):
 			pg.sprite.spritecollideany(self, self.game.tanks_group).set_can_move(False)
 
-	def destruction(self):
+	def destruction(self, fire):
 		if self.game.main_tank.rect.y + 5 >= self.rect.y + self.size[1]:
 			if self.type_ == 'b':
 				self.type_ = 'bu'
@@ -146,7 +146,31 @@ class Iron(pg.sprite.Sprite, Wall):
 			pg.sprite.spritecollideany(self, self.game.tanks_group).set_can_move(False)
 
 
-	def destruction(self):
+	def destruction(self, fire):
+		if fire.from_main_tank and self.game.main_tank.power >= 3:
+			if self.game.main_tank.rect.y + 5 >= self.rect.y + self.size[1]:
+				if self.type_ == 'i':
+					self.type_ = 'iu'
+			if self.game.main_tank.rect.y + self.game.main_tank.size <= self.rect.y:
+				if self.type_ == 'i':
+					self.type_ = 'id'
+
+			if self.type_ == 'iu':
+				self.kill()
+			if self.type_ == 'id':
+				self.kill()
+
+			if self.game.main_tank.rect.x >= self.rect.x + self.size[0]:
+				if self.type_ == 'i':
+					self.type_ = 'il'
+			if self.game.main_tank.rect.x + self.game.main_tank.size <= self.rect.x:
+				if self.type_ == 'i':
+					self.type_ = 'ir'
+
+			if self.type_ == 'ir':
+				self.kill()
+			if self.type_ == 'il':
+				self.kill()
 		return True
 
 
@@ -206,7 +230,7 @@ class IronXZ(pg.sprite.Sprite, Wall):
 		pass
 
 
-	def destruction(self):
+	def destruction(self, fire):
 		return False
 
 
@@ -245,7 +269,7 @@ class Water(pg.sprite.Sprite, Wall):
 			pg.sprite.spritecollideany(self, self.game.tanks_group).set_can_move(False)
 
 
-	def destruction(self):
+	def destruction(self, fire):
 		return False
 
 
@@ -284,7 +308,7 @@ class Bush(pg.sprite.Sprite, Wall):
 		pass
 
 
-	def destruction(self):
+	def destruction(self, fire):
 		return False
 
 

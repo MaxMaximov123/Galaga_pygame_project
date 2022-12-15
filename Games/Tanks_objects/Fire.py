@@ -42,7 +42,7 @@ class Fire(pg.sprite.Sprite):
 				self.kill()
 
 			if pg.sprite.spritecollideany(self, self.game.walls_group):  # ПРОВЕРКА КАСАНИЯ СО СТЕНОЙ
-				if pg.sprite.spritecollideany(self, self.game.walls_group).destruction():  # ИЗМЕНЕНИЕ СТЕНЫ ПРИ КАСАНИИ
+				if pg.sprite.spritecollideany(self, self.game.walls_group).destruction(self):  # ИЗМЕНЕНИЕ СТЕНЫ ПРИ КАСАНИИ
 					self.kill()
 
 			if (
@@ -55,8 +55,13 @@ class Fire(pg.sprite.Sprite):
 				pg.sprite.spritecollideany(self, self.game.tanks_group).hp -= 1  # ИЗМЕНЕНИЕ КОЛ-ВА ЖИЗНЕЙ
 				pg.sprite.spritecollideany(self, self.game.tanks_group).draw_hp()
 				self.kill()
-			if pg.sprite.spritecollideany(self, self.game.fires_group) != self:
-				self.kill()
+			if pg.sprite.spritecollide(self, self.game.fires_group, False):
+				obj = pg.sprite.spritecollide(self, self.game.fires_group, False)
+				if self in obj:
+					obj.remove(self)
+				if obj and self.from_main_tank != obj[0].from_main_tank:
+					self.kill()
+					obj[0].kill()
 
 	def is_collided_with(self, sprite):
 		return self.rect.colliderect(sprite.rect)

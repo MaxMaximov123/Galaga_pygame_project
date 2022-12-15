@@ -58,12 +58,10 @@ class MainTank(pg.sprite.Sprite):
 			self.kill()
 		self.rect.x, self.rect.y = self.x, self.y
 
-
-
 	def tank_can_move(self):
 		if pg.sprite.spritecollide(self, self.game.tanks_group, False):
 			obj = pg.sprite.spritecollide(self, self.game.tanks_group, False)
-			if self:
+			if self in obj:
 				obj.remove(self)
 				if obj:
 					self.set_can_move(False)
@@ -72,7 +70,6 @@ class MainTank(pg.sprite.Sprite):
 					return False
 		self.set_can_move(True)
 		return True
-
 
 	def left_move(self):  # движение влево
 		self.tank_can_move()
@@ -90,7 +87,6 @@ class MainTank(pg.sprite.Sprite):
 			self.vector_x = 1
 			self.vector_y = 0
 
-
 	def up_move(self):  # движение влево
 		self.tank_can_move()
 		if self.y > 0 and self.can_move:
@@ -107,7 +103,6 @@ class MainTank(pg.sprite.Sprite):
 			self.vector_x = 0
 			self.vector_y = 1
 
-
 	def is_collided_with(self, sprite):
 		return self.rect.colliderect(sprite.rect)
 
@@ -116,7 +111,6 @@ class MainTank(pg.sprite.Sprite):
 		text = font.render('100', True, (255, 0, 0))
 		self.image.blit(text, (0, 0))
 		self.frame_for_drawing_hp = self.frame_counter - 1
-
 
 
 class EnemyTank(MainTank):
@@ -148,9 +142,9 @@ class EnemyTank(MainTank):
 			pos[1] * config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0])
 		self.game = game
 
-
 	def move0(self):
-		self.tank_can_move()
+		pass
+		# self.tank_can_move()
 		# self.moves[0]()
 
 	def move1(self):
@@ -161,7 +155,6 @@ class EnemyTank(MainTank):
 
 	def move3(self):
 		pass
-
 
 	def update(self, *args):
 		super().update(args)
