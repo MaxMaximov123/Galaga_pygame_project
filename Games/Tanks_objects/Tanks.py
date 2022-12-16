@@ -88,7 +88,7 @@ class Tanks:
 		self.level = Levels.Level(self,
 								  f'Games/Tanks_objects/data/levels/level{self.level_num}.csv')  # ПУТЬ К ФАЙЛУ УРОВНЯ
 
-		self.groups = [self.walls_group, self.tanks_group, self.buttons_group, self.fires_group, self.bush_group]
+		self.groups = [self.tanks_group, self.walls_group, self.tanks_group, self.buttons_group, self.fires_group, self.bush_group]
 
 	def run(self):
 		self.buttons_group.add(self.button_menu)
@@ -215,7 +215,7 @@ class Tanks:
 
 		if len(self.tanks_group) <= Tanks.max_count_enemies:
 			enemy_tank = EnemyTank(random.choice(self.coords_in_board), self, power)
-			while not enemy_tank.tank_can_move() and self.coords_in_board:
+			while not (enemy_tank.tank_can_move() or enemy_tank.can_move) and self.coords_in_board:
 				enemy_tank.kill()
 				enemy_tank = EnemyTank(random.choice(self.coords_in_board), self, power)
 

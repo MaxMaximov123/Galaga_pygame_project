@@ -15,9 +15,8 @@ class Wall(pg.sprite.Sprite):
 		Wall.can_move = f
 
 	def update(self, *args):
-
-		self.render()
 		self.tank_can_move()
+		self.render()
 
 	def is_collided_with(self, sprite):
 		return self.rect.colliderect(sprite.rect)
@@ -29,11 +28,8 @@ class Wall(pg.sprite.Sprite):
 		pass
 
 	def tank_can_move(self):
-		if pg.sprite.spritecollideany(self, self.game.tanks_group):
-			tank = pg.sprite.spritecollideany(self, self.game.tanks_group)
-			tank.set_can_move(False)
-			if not tank.can_move:
-				tank.step_back(tank, step=1)
+		for tank in pg.sprite.spritecollide(self, self.game.tanks_group, False):
+			tank.step_back(tank, step=2)
 
 
 class Brick(Wall):
@@ -276,9 +272,9 @@ class Water(Wall):
 			self.size = self.base_size
 
 
-class Bush(Wall):
+class Bush(pg.sprite.Sprite):
 	def __init__(self, game, pos, type_='sh'):
-		super().__init__(game, pos, type_=type_)
+		super().__init__(game.bush_group)
 		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0], config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]
 		self.base_size = self.size
 		self.game = game
@@ -306,3 +302,14 @@ class Bush(Wall):
 
 	def tank_can_move(self):
 		return True
+
+
+	def set_can_move(self, f):
+		Wall.can_move = f
+
+	def is_collided_with(self, sprite):
+		return self.rect.colliderect(sprite.rect)
+
+
+	def destruction(self, fire):
+		return False
