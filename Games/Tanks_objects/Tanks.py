@@ -1,21 +1,24 @@
-from pprint import pprint
+import random
+import sys
 
 import pygame as pg
+
 from Games import config
+from Games.Tanks_objects import Levels
+from Games.Tanks_objects.Create_new_level import Creater
+from Games.Tanks_objects.Fire import Fire
+from Games.Tanks_objects.Game_over import GameOver
+from Games.Tanks_objects.Tank import MainTank, EnemyTank
 from Games.button import Button
 from Games.pause import Pause
-from Games.Tanks_objects.Fire import Fire
-import random
-from Games.Tanks_objects import Levels
-from Games.Tanks_objects.Tank import MainTank, EnemyTank
-from Games.Tanks_objects.Create_new_level import Creater
-from Games.Tanks_objects.Game_over import GameOver
+
+
 # from Main_window import MainWindow
 
 
 class Tanks:
-	level_num = 1   # НОМЕР УРОВНЯ
-	max_count_enemies = 4
+	level_num = 1  # НОМЕР УРОВНЯ
+	max_count_enemies = 5  # количество врагов
 
 	def __init__(self, main_win=None):
 		# Базовые параметры для всех игр
@@ -32,6 +35,7 @@ class Tanks:
 		self.pause = None  # ОБЪЕКТ ПАУЗА
 		self.btn_home = None  # КНОПКА МЕНЮ
 		self.size = config.WIDTH, config.HEIGHT  # РАЗМЕР ОКНА
+		self.clock = pg.time.Clock()
 
 		# НЕОБХОДИМЫЕ ГРУППЫ СПРАЙТОВ
 		self.fires_group = pg.sprite.Group()
@@ -48,7 +52,7 @@ class Tanks:
 		self.pause_screen = self.screen
 		self.step_move = 2
 
-		self.step_shot = config.FPS // 3   # сколько раз в секунду можно создавать выстрел
+		self.step_shot = config.FPS // 3  # сколько раз в секунду можно создавать выстрел
 		self.frame_counter_shot = self.step_shot
 		self.main_tank = MainTank((config.WIDTH // 2, config.HEIGHT // 15 * 13), self, power=3)
 		self.main_tank_moves = {
@@ -77,27 +81,25 @@ class Tanks:
 			self.enemies_place_left * 4, self.enemies_place_left * 8, 60)] for _ in range(
 			self.enemies_place_up, self.enemies_place_up * 5, 30)]
 
-
 		# Инициализация уровня
 		self.walls = []
 		self.fields_to_generate = []  # СПИСОК ПОЛЕЙ ДЛЯ ГЕНЕРАЦИИ ТАНКОВ
 		self.coords_in_board = []
-		self.level = Levels.Level(self, f'Games/Tanks_objects/data/levels/level{self.level_num}.csv')  # ПУТЬ К ФАЙЛУ УРОВНЯ
-
-
+		self.level = Levels.Level(self,
+								  f'Games/Tanks_objects/data/levels/level{self.level_num}.csv')  # ПУТЬ К ФАЙЛУ УРОВНЯ
 
 		self.groups = [self.walls_group, self.tanks_group, self.buttons_group, self.fires_group, self.bush_group]
 
 	def run(self):
-		clock = pg.time.Clock()
 		self.buttons_group.add(self.button_menu)
+		self.start_screen()
 		while self.running:
 			self.screen.fill((0, 0, 0))
 			self.main_tank.set_can_move(True)
 			for event in pg.event.get():
 				if event.type == pg.QUIT:
 					self.running = False
-					self.is_close_win = True
+					self.terminate()
 				if event.type == pg.MOUSEBUTTONDOWN:
 					if event.button == 1:
 						if self.button_menu.is_click(event.pos):
@@ -170,13 +172,11 @@ class Tanks:
 				if self.main_tank.can_move:
 					self.main_tank_moves[self.button_down]()
 
-
 			self.frame_counter_shot += 1  # СЧЕТЧИК КАДРОВ
 			if self.frame_counter_shot == config.FPS:
 				self.frame_counter_shot = 0
-			clock.tick(config.FPS)
+			self.clock.tick(config.FPS)
 			pg.display.update()
-
 
 	def is_close(self):
 		return self.is_close_win
@@ -195,7 +195,6 @@ class Tanks:
 
 		for f in self.fires_group:
 			f.set_can_move(True)
-
 
 	def close(self):
 		pg.quit()
@@ -219,6 +218,40 @@ class Tanks:
 			while not enemy_tank.tank_can_move() and self.coords_in_board:
 				enemy_tank.kill()
 				enemy_tank = EnemyTank(random.choice(self.coords_in_board), self, power)
+
+	def terminate(self):
+		pg.quit()
+		sys.exit()
+
+
+	def start_screen(self):
+		intro_text = ["ТАНКИ 1.0", "",
+					  "Правила игры:",
+					  "Используйте клавиши стрелок или WASD",
+					  "для движения и пробел для стрельбы"]
+
+		fon = pg.transform.scale(pg.image.load('Games/Tanks_objects/data/images/fon.gif'), (config.WIDTH, config.HEIGHT))
+		self.screen.blit(fon, (0, 0))
+		font = pg.font.Font(None, 30)
+		text_coord = 50
+		for line in intro_text:
+			string_rendered = font.render(line, 1, pg.Color('white'))
+			intro_rect = string_rendered.get_rect()
+			text_coord += 10
+			intro_rect.top = text_coord
+			intro_rect.x = 10
+			text_coord += intro_rect.height
+			self.screen.blit(string_rendered, intro_rect)
+
+		while True:
+			for event in pg.event.get():
+				if event.type == pg.QUIT:
+					self.terminate()
+				elif event.type == pg.KEYDOWN or \
+						event.type == pg.MOUSEBUTTONDOWN:
+					return  # начинаем игру
+			pg.display.flip()
+			self.clock.tick(config.FPS)
 
 
 if __name__ == '__main__':

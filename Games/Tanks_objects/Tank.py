@@ -11,7 +11,7 @@ class MainTank(pg.sprite.Sprite):
 		super().__init__(game.tanks_group)
 		self.pos = pos
 		self.copy_img = None
-		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]  # размер танка
+		self.size = config.TILE_SIZE  # размер танка
 		self.speed = 300  # пикселе в секунду
 		self.powers = ['Games/Tanks_objects/data/images/main_tank0.png']
 		self.power = power
@@ -33,7 +33,8 @@ class MainTank(pg.sprite.Sprite):
 		self.can_move = f
 
 	def update(self, *args):
-		if self.frame_for_drawing_hp and (
+		"""Обновление всех состояний танков"""
+		if self.frame_for_drawing_hp and (  # отрисовка HP
 				self.frame_for_drawing_hp + config.FPS // self.time_og_showing_hp) % config.FPS == self.frame_counter:
 			self.frame_for_drawing_hp = None
 			if self.vector_x:
@@ -47,7 +48,7 @@ class MainTank(pg.sprite.Sprite):
 		if self.frame_counter >= config.FPS:
 			self.frame_counter = 0
 		if not self.can_move:
-			self.step_back(self)
+			self.step_back(self, step=1)
 		if self.hp <= 0 and self == self.game.main_tank:
 			self.game.game_over()
 			self.kill()
@@ -61,12 +62,19 @@ class MainTank(pg.sprite.Sprite):
 			if self in obj:
 				obj.remove(self)
 				if obj:
-					# for i in obj:
-					# 	self.step_back(i, step=4, rev=True)
-					self.set_can_move(False)
-					# self.step_back(self, step=2)
+					for t in obj:
+						if self.can_move:
+							if self.vector_x == 1 and self.x < t.x:
+								self.x -= self.speed / config.FPS * self.vector_x
+							if self.vector_x == -1 and self.x > t.x:
+								self.x -= self.speed / config.FPS * self.vector_x
+							if self.vector_y == 1 and self.y < t.y:
+								self.y -= self.speed / config.FPS * self.vector_y
+							if self.vector_y == -1 and self.y > t.y:
+								self.y -= self.speed / config.FPS * self.vector_y
+					# self.set_can_move(False)
 					return False
-		self.set_can_move(True)
+		# self.set_can_move(True)
 		return True
 
 	def left_move(self):  # движение влево
@@ -76,6 +84,8 @@ class MainTank(pg.sprite.Sprite):
 			self.x -= self.speed / config.FPS
 			self.vector_x = -1
 			self.vector_y = 0
+			if not self.can_move:
+				self.step_back(self, step=1)
 
 	def right_move(self):  # движение вправо
 		self.tank_can_move()
@@ -84,6 +94,8 @@ class MainTank(pg.sprite.Sprite):
 			self.x += self.speed / config.FPS
 			self.vector_x = 1
 			self.vector_y = 0
+			if not self.can_move:
+				self.step_back(self, step=1)
 
 	def up_move(self):  # движение влево
 		self.tank_can_move()
@@ -92,6 +104,8 @@ class MainTank(pg.sprite.Sprite):
 			self.y -= self.speed / config.FPS
 			self.vector_x = 0
 			self.vector_y = -1
+			if not self.can_move:
+				self.step_back(self, step=1)
 
 	def down_move(self):  # движение вправо
 		self.tank_can_move()
@@ -100,6 +114,8 @@ class MainTank(pg.sprite.Sprite):
 			self.y += round(self.speed / config.FPS)
 			self.vector_x = 0
 			self.vector_y = 1
+			if not self.can_move:
+				self.step_back(self, step=1)
 
 	def is_collided_with(self, sprite):
 		return self.rect.colliderect(sprite.rect)
@@ -113,15 +129,16 @@ class MainTank(pg.sprite.Sprite):
 
 	def step_back(self, tank, step=1, rev=False):
 		if rev:
-			if config.WIDTH > tank.x + tank.speed / config.FPS * tank.vector_x * 2 + tank.size >= tank.size:
+			if config.WIDTH >= tank.x + tank.speed / config.FPS * tank.vector_x * step + tank.size >= tank.size - 1:
 				tank.x += tank.speed / config.FPS * tank.vector_x * step
-			if config.HEIGHT > tank.y + tank.speed / config.FPS * tank.vector_y * 2 + tank.size >= tank.size:
+			if config.HEIGHT >= tank.y + tank.speed / config.FPS * tank.vector_y * step + tank.size >= tank.size - 1:
 				tank.y += tank.speed / config.FPS * tank.vector_y * step
 		else:
-			if config.WIDTH > tank.x - tank.speed / config.FPS * tank.vector_x + tank.size >= tank.size:
+			if config.WIDTH >= tank.x - tank.speed / config.FPS * tank.vector_x * step + tank.size >= tank.size - 1:
 				tank.x -= tank.speed / config.FPS * tank.vector_x * step
-			if config.HEIGHT > tank.y - tank.speed / config.FPS * tank.vector_y + tank.size >= tank.size:
+			if config.HEIGHT >= tank.y - tank.speed / config.FPS * tank.vector_y * step + tank.size >= tank.size - 1:
 				tank.y -= tank.speed / config.FPS * tank.vector_y * step
+		self.set_can_move(True)
 
 
 class EnemyTank(MainTank):
