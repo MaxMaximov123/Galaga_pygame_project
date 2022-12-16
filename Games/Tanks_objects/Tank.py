@@ -64,15 +64,16 @@ class MainTank(pg.sprite.Sprite):
 				if obj:
 					for t in obj:
 						if self.can_move:
-							if self.vector_x == 1 and self.x < t.x:
-								self.x -= self.speed / config.FPS * self.vector_x
-							if self.vector_x == -1 and self.x > t.x:
-								self.x -= self.speed / config.FPS * self.vector_x
-							if self.vector_y == 1 and self.y < t.y:
-								self.y -= self.speed / config.FPS * self.vector_y
-							if self.vector_y == -1 and self.y > t.y:
-								self.y -= self.speed / config.FPS * self.vector_y
-							self.rect.x, self.rect.y = self.x, self.y
+							t.step_back(t, step=4)
+							# if self.vector_x == 1 and self.x + self.size <= t.x:
+							# 	self.x -= self.speed / config.FPS * self.vector_x
+							# if self.vector_x == -1 and self.x >= t.x + t.size:
+							# 	self.x -= self.speed / config.FPS * self.vector_x
+							# if self.vector_y == 1 and self.y + self.size < t.y:
+							# 	self.y -= self.speed / config.FPS * self.vector_y
+							# if self.vector_y == -1 and self.y > t.y + self.size:
+							# 	self.y -= self.speed / config.FPS * self.vector_y
+							# self.rect.x, self.rect.y = self.x, self.y
 
 		if pg.sprite.spritecollide(self, self.game.tanks_group, False):
 			obj = pg.sprite.spritecollide(self, self.game.tanks_group, False)
@@ -117,7 +118,7 @@ class MainTank(pg.sprite.Sprite):
 		self.tank_can_move()
 		if self.y + self.size <= config.HEIGHT and self.can_move:
 			self.image = pg.transform.rotate(self.base_image, 180)
-			self.y += round(self.speed / config.FPS)
+			self.y += self.speed / config.FPS
 			self.vector_x = 0
 			self.vector_y = 1
 			# if not self.can_move:
@@ -155,7 +156,7 @@ class EnemyTank(MainTank):
 		self.base_image = pg.image.load(f'Games/Tanks_objects/data/images/enemy_tank{power}.png').convert_alpha()  # картинка спрайта
 		self.base_image = pg.transform.scale(self.base_image, (self.size, self.size))
 		self.vector_x = random.randint(-1, 1)
-		self.speed //= 4
+		self.speed = 100
 		if self.vector_x == 0:
 			self.vector_y = random.choice([-1, 1])
 		else:
