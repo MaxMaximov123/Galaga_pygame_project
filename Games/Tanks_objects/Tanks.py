@@ -11,6 +11,8 @@ from Games.Tanks_objects.Game_over import GameOver
 from Games.Tanks_objects.Tank import MainTank, EnemyTank
 from Games.button import Button
 from Games.pause import Pause
+from os import listdir
+from os.path import isfile, join
 
 
 # from Main_window import MainWindow
@@ -26,7 +28,9 @@ class Tanks:
 		pg.init()
 		pg.display.set_caption('Tanks')
 		self.level_num = Tanks.level_num  # НОМЕР УРОВНЯ
-		self.levels = ['Games/Tanks_objects/data/levels/level0.csv']  # ОБЪЕКТЫ УРОВНИ
+		self.levels = [
+			f for f in listdir('Games/Tanks_objects/data/levels') if
+			isfile(join('Games/Tanks_objects/data/levels', f))]  # ОБЪЕКТЫ УРОВНИ
 		self.main_win = main_win  # СТАРТОВОЕ ОКНО
 		self.button_down = ''  # КАКАЯ КНОПКА НАЖАТА
 		self.space_is_down = False  # НАЖАТ ЛИ ПРОБЕЛ
@@ -85,14 +89,15 @@ class Tanks:
 		self.walls = []
 		self.fields_to_generate = []  # СПИСОК ПОЛЕЙ ДЛЯ ГЕНЕРАЦИИ ТАНКОВ
 		self.coords_in_board = []
-		self.level = Levels.Level(self,
-								  f'Games/Tanks_objects/data/levels/level{self.level_num}.csv')  # ПУТЬ К ФАЙЛУ УРОВНЯ
+		self.level = None
 
 		self.groups = [self.tanks_group, self.walls_group, self.tanks_group, self.buttons_group, self.fires_group, self.bush_group]
 
 	def run(self):
 		self.buttons_group.add(self.button_menu)
 		self.start_screen()
+		self.level = Levels.Level(
+			self, f'Games/Tanks_objects/data/levels/level{self.level_num % len(self.levels)}.csv')  # ПУТЬ К ФАЙЛУ УРОВНЯ
 		while self.running:
 			self.screen.fill((0, 0, 0))
 			self.main_tank.set_can_move(True)
@@ -231,6 +236,34 @@ class Tanks:
 
 		fon = pg.transform.scale(pg.image.load('Games/Tanks_objects/data/images/fon.gif'), (config.WIDTH, config.HEIGHT))
 		self.screen.blit(fon, (0, 0))
+		self.print_level(self.levels[self.level_num % len(self.levels)])
+
+		while True:
+			for event in pg.event.get():
+				if event.type == pg.QUIT:
+					self.terminate()
+				if event.type == pg.KEYDOWN:
+					if event.key in [pg.K_a, pg.K_LEFT]:
+						self.level_num -= 1
+						self.screen.blit(fon, (0, 0))
+						self.print_level(self.levels[self.level_num % len(self.levels)])
+					elif event.key in [pg.K_d, pg.K_RIGHT]:
+						self.level_num += 1
+						self.screen.blit(fon, (0, 0))
+						self.print_level(self.levels[self.level_num % len(self.levels)])
+					else:
+						return
+
+				if event.type == pg.MOUSEBUTTONDOWN:
+					return  # начинаем игру
+			pg.display.flip()
+			self.clock.tick(config.FPS)
+
+	def print_level(self, level):
+		intro_text = ["ТАНКИ 1.0", "",
+					  "Правила игры:",
+					  "Используйте клавиши стрелок или WASD",
+					  "для движения и пробел для стрельбы"]
 		font = pg.font.Font(None, 30)
 		text_coord = 50
 		for line in intro_text:
@@ -241,16 +274,13 @@ class Tanks:
 			intro_rect.x = 10
 			text_coord += intro_rect.height
 			self.screen.blit(string_rendered, intro_rect)
-
-		while True:
-			for event in pg.event.get():
-				if event.type == pg.QUIT:
-					self.terminate()
-				elif event.type == pg.KEYDOWN or \
-						event.type == pg.MOUSEBUTTONDOWN:
-					return  # начинаем игру
-			pg.display.flip()
-			self.clock.tick(config.FPS)
+		string_rendered = font.render('Уровень: ' + level[:-4], 1, pg.Color('white'))
+		intro_rect = string_rendered.get_rect()
+		text_coord += 10
+		intro_rect.top = text_coord
+		intro_rect.x = 10
+		text_coord += intro_rect.height
+		self.screen.blit(string_rendered, intro_rect)
 
 
 if __name__ == '__main__':
