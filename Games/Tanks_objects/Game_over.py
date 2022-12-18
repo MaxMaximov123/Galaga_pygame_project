@@ -8,7 +8,7 @@ class GameOver(pg.sprite.Sprite):
     def __init__(self, game):
         super().__init__(game.pause_group)
         self.base_img = pg.image.load(
-            'Games/Tanks_objects/data/images/gameover.png').convert_alpha()
+            'Games/Tanks_objects/data/images/gameover2.png').convert_alpha()
         self.image = self.base_image = pg.transform.scale(self.base_img, (config.WIDTH, config.HEIGHT))
         self.speed = 200
         self.rect = self.image.get_rect()

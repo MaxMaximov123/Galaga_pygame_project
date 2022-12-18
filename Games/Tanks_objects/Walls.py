@@ -28,8 +28,9 @@ class Wall(pg.sprite.Sprite):
 		pass
 
 	def tank_can_move(self):
-		for tank in pg.sprite.spritecollide(self, self.game.tanks_group, False):
-			tank.step_back(tank, step=2)
+		if pg.sprite.spritecollide(self, self.game.tanks_group, False):
+			return True
+		return False
 
 
 class Brick(Wall):
@@ -56,14 +57,13 @@ class Brick(Wall):
 
 	def update(self, *args):
 		self.render()
-		self.tank_can_move()
 
 	def destruction(self, fire):
-		if self.game.main_tank.rect.y + 5 >= self.rect.y + self.size[1]:
+		if fire.rect.y >= self.rect.y + self.size[1] // 2:
 			if self.type_ == 'b':
 				self.type_ = 'bu'
 				return True
-		if self.game.main_tank.rect.y + self.game.main_tank.size <= self.rect.y:
+		if fire.rect.y + fire.size[1] // 2 <= self.rect.y:
 			if self.type_ == 'b':
 				self.type_ = 'bd'
 				return True
@@ -75,11 +75,11 @@ class Brick(Wall):
 			self.kill()
 			return True
 
-		if self.game.main_tank.rect.x >= self.rect.x + self.size[0]:
+		if fire.rect.x >= self.rect.x + self.size[0] // 2:
 			if self.type_ == 'b':
 				self.type_ = 'bl'
 				return True
-		if self.game.main_tank.rect.x + self.game.main_tank.size <= self.rect.x:
+		if fire.rect.x + fire.size[0] // 2 <= self.rect.x:
 			if self.type_ == 'b':
 				self.type_ = 'br'
 				return True
@@ -89,7 +89,7 @@ class Brick(Wall):
 			return True
 		if self.type_ == 'bl':
 			self.kill()
-			return True
+		return True
 
 
 	def render(self):
@@ -151,29 +151,37 @@ class Iron(Wall):
 
 	def destruction(self, fire):
 		if fire.from_main_tank and self.game.main_tank.power >= 3:
-			if self.game.main_tank.rect.y + 5 >= self.rect.y + self.size[1]:
+			if fire.rect.y >= self.rect.y + self.size[1] // 2:
 				if self.type_ == 'i':
 					self.type_ = 'iu'
-			if self.game.main_tank.rect.y + self.game.main_tank.size <= self.rect.y:
+					return True
+			if fire.rect.y + fire.size[1] // 2 <= self.rect.y:
 				if self.type_ == 'i':
 					self.type_ = 'id'
+					return True
 
 			if self.type_ == 'iu':
 				self.kill()
+				return True
 			if self.type_ == 'id':
 				self.kill()
+				return True
 
-			if self.game.main_tank.rect.x >= self.rect.x + self.size[0]:
+			if fire.rect.x >= self.rect.x + self.size[0] // 2:
 				if self.type_ == 'i':
 					self.type_ = 'il'
-			if self.game.main_tank.rect.x + self.game.main_tank.size <= self.rect.x:
+					return True
+			if fire.rect.x + fire.size[0] // 2 <= self.rect.x:
 				if self.type_ == 'i':
 					self.type_ = 'ir'
+					return True
 
 			if self.type_ == 'ir':
 				self.kill()
+				return True
 			if self.type_ == 'il':
 				self.kill()
+				return True
 		return True
 
 
@@ -280,9 +288,10 @@ class Bush(pg.sprite.Sprite):
 		self.game = game
 		self.pos = pos
 		self.type_ = type_
-		self.image0 = pg.image.load('Games/Tanks_objects/data/images/bush.png').convert_alpha()  # картинка спрайта  # контур спрайта
+		self.image0 = pg.image.load('Games/Tanks_objects/data/images/bush.png')  # картинка спрайта  # контур спрайта
 		self.image0 = pg.transform.scale(self.image0, self.base_size)
 		self.image0.set_colorkey((0, 0, 0))
+		self.image0 = self.image0.convert_alpha()
 		self.can_move = True
 		self.update()
 
@@ -301,7 +310,7 @@ class Bush(pg.sprite.Sprite):
 
 
 	def tank_can_move(self):
-		return True
+		pass
 
 
 	def set_can_move(self, f):

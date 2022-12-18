@@ -54,7 +54,7 @@ class Tanks:
 
 		self.step_shot = config.FPS // 3  # сколько раз в секунду можно создавать выстрел
 		self.frame_counter_shot = self.step_shot
-		self.main_tank = MainTank((config.WIDTH // 2, config.HEIGHT // 15 * 13), self, power=3)
+		self.main_tank = MainTank((config.WIDTH // 2, config.HEIGHT // 15 * 13), self, power=1)
 		self.main_tank_moves = {
 			'left': self.main_tank.left_move,
 			'right': self.main_tank.right_move,
@@ -184,15 +184,14 @@ class Tanks:
 	def start_pause(self):
 		self.is_pause = True
 		self.pause = Pause((config.WIDTH // 2, config.HEIGHT // 5), self.screen)
-		self.pause_group.add(self.groups)
-		self.pause_group.add(self.pause.buttons)
-		for f in self.fires_group:
+		self.pause_group.add(*self.groups)
+		for f in self.pause_group:
 			f.set_can_move(False)
+		self.pause_group.add(self.pause.buttons)
 
 	def start(self):
 		self.is_pause = False
 		self.pause_group.remove(*self.pause.buttons)
-
 		for f in self.fires_group:
 			f.set_can_move(True)
 
@@ -201,8 +200,8 @@ class Tanks:
 
 	def game_over(self):
 		self.is_pause = True
-		self.pause_group.add(self.groups)
-		for f in self.fires_group:
+		self.pause_group.add(*self.groups)
+		for f in self.pause_group:
 			f.set_can_move(False)
 		self.all_groups.add(GameOver(self))
 
@@ -215,7 +214,7 @@ class Tanks:
 
 		if len(self.tanks_group) <= Tanks.max_count_enemies:
 			enemy_tank = EnemyTank(random.choice(self.coords_in_board), self, power)
-			while not (enemy_tank.tank_can_move() or enemy_tank.can_move) and self.coords_in_board:
+			while not enemy_tank.tank_can_move() and self.coords_in_board:
 				enemy_tank.kill()
 				enemy_tank = EnemyTank(random.choice(self.coords_in_board), self, power)
 
