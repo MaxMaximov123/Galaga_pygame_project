@@ -19,7 +19,7 @@ from os.path import isfile, join
 
 
 class Tanks:
-	level_num = 1  # НОМЕР УРОВНЯ
+	level_num = 0  # НОМЕР УРОВНЯ
 	max_count_enemies = 5  # количество врагов
 
 	def __init__(self, main_win=None):
