@@ -54,7 +54,7 @@ class Tanks:
 
 		self.step_shot = config.FPS // 3  # сколько раз в секунду можно создавать выстрел
 		self.frame_counter_shot = self.step_shot
-		self.main_tank = MainTank((config.WIDTH // 2, config.HEIGHT // 15 * 13), self, power=1)
+		self.main_tank = MainTank((config.WIDTH // 2, config.HEIGHT // 15 * 13), self, power=3)
 		self.main_tank_moves = {
 			'left': self.main_tank.left_move,
 			'right': self.main_tank.right_move,
@@ -148,7 +148,7 @@ class Tanks:
 
 				if event.type == self.MYEVENTTYPE:
 					if len(self.tanks_group) <= Tanks.max_count_enemies:
-						self.generate_new_enemy(random.randint(0, 0))
+						self.generate_new_enemy(random.randint(0, 3))
 
 			if self.space_is_down and self.frame_counter_shot == self.step_shot:  # СОЗДАНИЕ ПУЛИ ПРИ НАЖАТИИ ПРОБЕЛА
 				self.frame_counter_shot = 0

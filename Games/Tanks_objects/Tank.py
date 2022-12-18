@@ -30,6 +30,7 @@ class MainTank(pg.sprite.Sprite):
 		self.hp = self.power + 1
 		self.frame_for_drawing_hp = None
 		self.frame_counter = 0
+		self.do_rotation = False
 
 	def set_can_move(self, f):
 		self.can_move = f
@@ -64,18 +65,22 @@ class MainTank(pg.sprite.Sprite):
 				obj.remove(self)
 				if obj:
 					self.step_back(self, step=1)
+					self.do_rotation = True
 
 		if any([i.tank_can_move() for i in pg.sprite.spritecollide(self, self.game.walls_group, False)]):  # СТОЛКНОВЕНИЕ СО СТЕНОЙ
 			self.step_back(self, step=1)
+			self.do_rotation = True
 
 		if pg.sprite.spritecollide(self, self.game.tanks_group, False):
 			obj = pg.sprite.spritecollide(self, self.game.tanks_group, False)
 			if self in obj:
 				obj.remove(self)
-				if obj:
-					self.set_can_move(False)
-					print('rotate')
-					return False
+			if (
+					obj or not (config.WIDTH - self.size > self.x >= 0)
+					or not (config.HEIGHT - self.size > self.y >= 0)):
+				self.do_rotation = True
+				self.set_can_move(False)
+				return False
 		self.set_can_move(True)
 		return True
 
@@ -162,7 +167,7 @@ class EnemyTank(MainTank):
 		self.moves = [self.left_move, self.right_move, self.up_move, self.down_move]
 		self.moves_by_power = [self.move0, self.move1, self.move2, self.move3]
 		if power == 1:
-			self.speed *= 2
+			self.speed *= 1.2
 		self.rect.x, self.rect.y = self.x, self.y = (
 			pos[0] * config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0],
 			pos[1] * config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0])
@@ -179,13 +184,13 @@ class EnemyTank(MainTank):
 			self.up_move()
 
 	def move1(self):
-		pass
+		self.move0()
 
 	def move2(self):
-		pass
+		self.move0()
 
 	def move3(self):
-		pass
+		self.move0()
 
 	def update(self, *args):
 		super().update(args)
@@ -194,5 +199,9 @@ class EnemyTank(MainTank):
 				Fire(self.game, (
 					self.rect.x + self.size // 2,
 					self.rect.y + self.size // 2), False, self.vector_x, self.vector_y)
-			self.moves_by_power[self.power]()
+			if self.do_rotation:
+				random.choice(self.moves)()
+				self.do_rotation = False
+			else:
+				self.moves_by_power[self.power]()
 
