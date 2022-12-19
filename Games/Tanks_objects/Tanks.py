@@ -12,6 +12,7 @@ from Games.Tanks_objects.Tank import MainTank, EnemyTank
 from Games.button import Button
 from Games.pause import Pause
 from os import listdir
+from Games.Tanks_objects.Win_screen import WinScreen
 from os.path import isfile, join
 
 
@@ -20,7 +21,8 @@ from os.path import isfile, join
 
 class Tanks:
 	level_num = 0  # НОМЕР УРОВНЯ
-	max_count_enemies = 5  # количество врагов
+	max_count_enemies = 5  # количество врагов на экране в любой момент времен
+	max_count_enemies_in_game = 5  # количество врагов за всю игру
 
 	def __init__(self, main_win=None):
 		# Базовые параметры для всех игр
@@ -56,7 +58,7 @@ class Tanks:
 		self.pause_screen = self.screen
 		self.step_move = 2
 
-		self.step_shot = config.FPS // 3  # сколько раз в секунду можно создавать выстрел
+		self.step_shot = config.FPS // 50  # сколько раз в секунду можно создавать выстрел
 		self.frame_counter_shot = self.step_shot
 		self.main_tank = MainTank((config.WIDTH // 2, config.HEIGHT // 15 * 13), self, power=3)
 		self.main_tank_moves = {
@@ -74,6 +76,8 @@ class Tanks:
 			'right': [pg.K_RIGHT, pg.K_d],
 			'up': [pg.K_UP, pg.K_w],
 			'down': [pg.K_DOWN, pg.K_s]}
+		self.kill_counts = [0, 0, 0, 0]
+		self.all_tanks_count = 0
 		self.button_menu = Button((30, 30), (30, 30), self.screen, path='Games/Tanks_objects/data/images/menu.png')
 		self.enemies = []
 		self.fires = []
@@ -152,8 +156,10 @@ class Tanks:
 							create = Creater(self)
 
 				if event.type == self.MYEVENTTYPE:
-					if len(self.tanks_group) <= Tanks.max_count_enemies:
-						self.generate_new_enemy(random.randint(0, 3))
+					if self.all_tanks_count < self.max_count_enemies_in_game:
+						if len(self.tanks_group) <= Tanks.max_count_enemies:
+							self.generate_new_enemy(random.randint(0, 3))
+							self.all_tanks_count += 1
 
 			if self.space_is_down and self.frame_counter_shot == self.step_shot:  # СОЗДАНИЕ ПУЛИ ПРИ НАЖАТИИ ПРОБЕЛА
 				self.frame_counter_shot = 0
@@ -168,11 +174,12 @@ class Tanks:
 				for group in self.groups:
 					group.draw(self.screen)
 					group.update()
-
 			else:
 				self.pause_group.draw(self.screen)
 				self.pause_group.update()
 
+			if sum(self.kill_counts) >= self.max_count_enemies_in_game:
+				self.win()
 			if self.button_down:  # НАЖАТИЕ ОДНОЙ ИЗ КНОПОК ДВИЖЕНИЯ
 				if self.main_tank.can_move:
 					self.main_tank_moves[self.button_down]()
@@ -209,6 +216,11 @@ class Tanks:
 		for f in self.pause_group:
 			f.set_can_move(False)
 		self.all_groups.add(GameOver(self))
+
+	def win(self):
+		self.is_pause = True
+		self.pause_group.add(*self.groups)
+		self.all_groups.add(WinScreen(self))
 
 	def generate_new_enemy(self, power):
 		self.coords_in_board = []

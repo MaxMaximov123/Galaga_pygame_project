@@ -55,6 +55,7 @@ class MainTank(pg.sprite.Sprite):
 				self.game.game_over()
 				self.kill()
 			elif self.hp <= 0:
+				self.game.kill_counts[self.power] += 1
 				self.kill()
 			self.rect.x, self.rect.y = self.x, self.y
 
