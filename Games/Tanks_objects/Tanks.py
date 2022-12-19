@@ -22,7 +22,7 @@ from os.path import isfile, join
 class Tanks:
 	level_num = 0  # НОМЕР УРОВНЯ
 	max_count_enemies = 5  # количество врагов на экране в любой момент времен
-	max_count_enemies_in_game = 5  # количество врагов за всю игру
+	max_count_enemies_in_game = random.randint(10, 15)  # количество врагов за всю игру
 
 	def __init__(self, main_win=None):
 		# Базовые параметры для всех игр
@@ -58,7 +58,7 @@ class Tanks:
 		self.pause_screen = self.screen
 		self.step_move = 2
 
-		self.step_shot = config.FPS // 50  # сколько раз в секунду можно создавать выстрел
+		self.step_shot = config.FPS // 4  # сколько раз в секунду можно создавать выстрел
 		self.frame_counter_shot = self.step_shot
 		self.main_tank = MainTank((config.WIDTH // 2, config.HEIGHT // 15 * 13), self, power=3)
 		self.main_tank_moves = {
@@ -178,7 +178,7 @@ class Tanks:
 				self.pause_group.draw(self.screen)
 				self.pause_group.update()
 
-			if sum(self.kill_counts) >= self.max_count_enemies_in_game:
+			if sum(self.kill_counts) >= self.max_count_enemies_in_game and not self.is_pause:
 				self.win()
 			if self.button_down:  # НАЖАТИЕ ОДНОЙ ИЗ КНОПОК ДВИЖЕНИЯ
 				if self.main_tank.can_move:

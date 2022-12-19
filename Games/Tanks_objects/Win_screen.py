@@ -12,31 +12,38 @@ class WinScreen(pg.sprite.Sprite):
             'Games/Tanks_objects/data/images/you_win.jpg').convert_alpha()
         self.image = self.base_image = pg.transform.scale(self.base_img, (config.WIDTH, config.HEIGHT))
         self.speed = 200
+        self.images = []
+        for i in range(4):
+            tank_img = pg.image.load(f'Games/Tanks_objects/data/images/enemy_tank{i}.png').convert_alpha()
+            tank_img = pg.transform.scale(tank_img, (40, 40))
+            tank_img = pg.transform.rotate(tank_img, -90)
+            self.images.append(tank_img)
         self.game = game
         self.text_coord = 50
-        self.vis_kills = self.game.kill_counts[:]
+        self.vis_kills = [-1, -1, -1, -1]
         self.rect = self.image.get_rect()
 
     def update(self):
-        self.text_coord = config.HEIGHT // 2
-        if sum(self.vis_kills) > 0:
-            self.game.screen.blit(self.image, (0, 0))
+        self.text_coord = config.HEIGHT // 8 * 5
+        self.game.screen.blit(self.base_image, (0, 0))
         self.print_text()
 
     def print_text(self):
-        for kills1, j in enumerate(self.vis_kills):
-            if kills1 > 0:
+        for j in range(len(self.vis_kills)):
+            if self.vis_kills[j] < self.game.kill_counts[j]:
+                self.vis_kills[j] += 0.015
+                break
+        for i in range(len(self.vis_kills)):
+            if self.vis_kills[i] >= 0:
                 font = pg.font.Font(None, 50)
-                string_rendered = font.render(str(kills1), 1, pg.Color('white'))
+                string_rendered = font.render(str(round(self.vis_kills[i])), 1, pg.Color('white'))
                 intro_rect = string_rendered.get_rect()
                 intro_rect.top = self.text_coord
-                intro_rect.x = config.WIDTH // 4 * 3
+                intro_rect.x = config.WIDTH // 7 * 4
+                self.game.screen.blit(self.images[i], (config.WIDTH // 7 * 3, self.text_coord))
                 self.text_coord += intro_rect.height
                 self.game.screen.blit(string_rendered, intro_rect)
-                self.vis_kills[j] -= 1
-                print(self.vis_kills)
-                return True
-            self.text_coord += 70
+            self.text_coord += 15
         return False
 
 
