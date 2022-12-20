@@ -31,6 +31,7 @@ class MainTank(pg.sprite.Sprite):
 		self.frame_for_drawing_hp = None
 		self.frame_counter = 0
 		self.do_rotation = False
+		self.last_vector_x, self.last_vector_y = self.vector_x, self.vector_y
 
 	def set_can_move(self, f):
 		self.can_move = f
@@ -87,6 +88,7 @@ class MainTank(pg.sprite.Sprite):
 			if f:
 				self.image = pg.transform.rotate(self.base_image, 90)
 			self.x -= self.speed / config.FPS
+			self.last_vector_x, self.last_vector_y = self.vector_x, self.vector_y
 			self.vector_x = -1
 			self.vector_y = 0
 
@@ -96,6 +98,7 @@ class MainTank(pg.sprite.Sprite):
 			if f:
 				self.image = pg.transform.rotate(self.base_image, -90)
 			self.x += self.speed / config.FPS
+			self.last_vector_x, self.last_vector_y = self.vector_x, self.vector_y
 			self.vector_x = 1
 			self.vector_y = 0
 
@@ -105,6 +108,7 @@ class MainTank(pg.sprite.Sprite):
 			if f:
 				self.image = pg.transform.rotate(self.base_image, 0)
 			self.y -= self.speed / config.FPS
+			self.last_vector_x, self.last_vector_y = self.vector_x, self.vector_y
 			self.vector_x = 0
 			self.vector_y = -1
 
@@ -114,6 +118,7 @@ class MainTank(pg.sprite.Sprite):
 			if f:
 				self.image = pg.transform.rotate(self.base_image, 180)
 			self.y += self.speed / config.FPS
+			self.last_vector_x, self.last_vector_y = self.vector_x, self.vector_y
 			self.vector_x = 0
 			self.vector_y = 1
 
@@ -174,25 +179,26 @@ class EnemyTank(MainTank):
 			pos[0] * config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0],
 			pos[1] * config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0])
 		self.game = game
+		self.last_vector_x, self.last_vector_y = self.vector_x, self.vector_y
 
-	def move0(self):
+	def move0(self, f=True):
 		if self.vector_x == 1:
-			self.right_move()
+			self.right_move(f)
 		if self.vector_x == -1:
-			self.left_move()
+			self.left_move(f)
 		if self.vector_y == 1:
-			self.down_move()
+			self.down_move(f)
 		if self.vector_y == -1:
-			self.up_move()
+			self.up_move(f)
 
-	def move1(self):
-		self.move0()
+	def move1(self, f=True):
+		self.move0(f)
 
-	def move2(self):
-		self.move0()
+	def move2(self, f=True):
+		self.move0(f)
 
-	def move3(self):
-		self.move0()
+	def move3(self, f=True):
+		self.move0(f)
 
 	def update(self, *args):
 		super().update(args)
@@ -202,7 +208,7 @@ class EnemyTank(MainTank):
 					self.rect.x + self.size // 2,
 					self.rect.y + self.size // 2), False, self.vector_x, self.vector_y)
 			if self.do_rotation:
-				random.choice(self.moves)(f=False)
+				random.choice(self.moves)(False)
 				self.do_rotation = False
 			else:
 				self.moves_by_power[self.power]()

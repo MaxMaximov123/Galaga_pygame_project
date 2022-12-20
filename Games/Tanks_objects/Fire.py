@@ -41,9 +41,11 @@ class Fire(pg.sprite.Sprite):
 			else:
 				self.kill()
 
-			if any([i.destruction(self) for i in pg.sprite.spritecollide(self, self.game.walls_group, False)]):  # ПРОВЕРКА КАСАНИЯ СО СТЕНОЙ
+			for i in pg.sprite.spritecollide(self, self.game.walls_group, False):  # ПРОВЕРКА КАСАНИЯ СО СТЕНОЙ
+				if i.destruction(self):
+					self.kill()
+					break
 				# ИЗМЕНЕНИЕ СТЕНЫ ПРИ КАСАНИИ
-				self.kill()
 
 			if (
 					pg.sprite.spritecollideany(self, self.game.tanks_group) and

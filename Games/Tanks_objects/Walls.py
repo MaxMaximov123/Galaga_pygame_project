@@ -59,11 +59,11 @@ class Brick(Wall):
 		self.render()
 
 	def destruction(self, fire):
-		if fire.rect.y >= self.rect.y + self.size[1] // 2:
+		if fire.vector_y < 0:
 			if self.type_ == 'b':
 				self.type_ = 'bu'
 				return True
-		if fire.rect.y + fire.size[1] // 2 <= self.rect.y:
+		if fire.vector_y > 0:
 			if self.type_ == 'b':
 				self.type_ = 'bd'
 				return True
@@ -75,11 +75,11 @@ class Brick(Wall):
 			self.kill()
 			return True
 
-		if fire.rect.x >= self.rect.x + self.size[0] // 2:
+		if fire.vector_x < 0:
 			if self.type_ == 'b':
 				self.type_ = 'bl'
 				return True
-		if fire.rect.x + fire.size[0] // 2 <= self.rect.x:
+		if fire.vector_x > 0:
 			if self.type_ == 'b':
 				self.type_ = 'br'
 				return True
@@ -151,11 +151,11 @@ class Iron(Wall):
 
 	def destruction(self, fire):
 		if fire.from_main_tank and self.game.main_tank.power >= 3:
-			if fire.rect.y >= self.rect.y + self.size[1] // 2:
+			if fire.vector_y < 0:
 				if self.type_ == 'i':
 					self.type_ = 'iu'
 					return True
-			if fire.rect.y + fire.size[1] // 2 <= self.rect.y:
+			if fire.vector_y > 0:
 				if self.type_ == 'i':
 					self.type_ = 'id'
 					return True
@@ -167,11 +167,11 @@ class Iron(Wall):
 				self.kill()
 				return True
 
-			if fire.rect.x >= self.rect.x + self.size[0] // 2:
+			if fire.vector_x < 0:
 				if self.type_ == 'i':
 					self.type_ = 'il'
 					return True
-			if fire.rect.x + fire.size[0] // 2 <= self.rect.x:
+			if fire.vector_x > 0:
 				if self.type_ == 'i':
 					self.type_ = 'ir'
 					return True
