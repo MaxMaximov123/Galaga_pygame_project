@@ -21,7 +21,7 @@ class MainTank(pg.sprite.Sprite):
 		self.base_image = pg.transform.scale(self.base_image, (self.size, self.size))
 		self.image = pg.transform.rotate(self.base_image, 0)
 		self.rect = self.image.get_rect(center=self.pos)  # контур спрайта
-		self.time_og_showing_hp = 3  # КАКУЮ ЧАСТЬ СЕКУНДЫ БУДЕТ ПОКАЗЫВАТЬСЯ HP
+		self.time_og_showing_hp = 0.1  # КАКУЮ ЧАСТЬ СЕКУНДЫ БУДЕТ ПОКАЗЫВАТЬСЯ HP
 		self.game = game
 		self.vector_x = 0
 		self.vector_y = -1

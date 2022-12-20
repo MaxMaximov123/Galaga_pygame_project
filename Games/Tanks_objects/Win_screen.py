@@ -3,6 +3,7 @@ from random import randint
 import pygame as pg
 import sys
 from Games import config
+from Games.Tanks_objects.Print_kills import print_kills
 
 
 class WinScreen(pg.sprite.Sprite):
@@ -24,27 +25,9 @@ class WinScreen(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def update(self):
-        self.text_coord = config.HEIGHT // 8 * 5
+        self.text_coord = config.HEIGHT // 8 * 2.5
         self.game.screen.blit(self.base_image, (0, 0))
-        self.print_text()
-
-    def print_text(self):
-        for j in range(len(self.vis_kills)):
-            if self.vis_kills[j] < self.game.kill_counts[j]:
-                self.vis_kills[j] += 0.015
-                break
-        for i in range(len(self.vis_kills)):
-            if self.vis_kills[i] >= 0:
-                font = pg.font.Font(None, 50)
-                string_rendered = font.render(str(round(self.vis_kills[i])), 1, pg.Color('white'))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.text_coord
-                intro_rect.x = config.WIDTH // 7 * 4
-                self.game.screen.blit(self.images[i], (config.WIDTH // 7 * 3, self.text_coord))
-                self.text_coord += intro_rect.height
-                self.game.screen.blit(string_rendered, intro_rect)
-            self.text_coord += 15
-        return False
+        print_kills(self)
 
 
 
