@@ -14,6 +14,7 @@ from Games.pause import Pause
 from os import listdir
 from Games.Tanks_objects.Win_screen import WinScreen
 from os.path import isfile, join
+from Games.Tanks_objects.Boosters import *
 
 
 # from Main_window import MainWindow
@@ -26,6 +27,7 @@ class Tanks:
 
 	def __init__(self, main_win=None):
 		# Базовые параметры для всех игр
+		self.coords_in_board1 = []
 		pg.mixer.pre_init(44100, -16, 1, 512)
 		pg.init()
 		pg.display.set_caption('Tanks')
@@ -45,6 +47,7 @@ class Tanks:
 
 		# НЕОБХОДИМЫЕ ГРУППЫ СПРАЙТОВ
 		self.fires_group = pg.sprite.Group()
+		self.boosters_group = pg.sprite.Group()
 		self.tanks_group = pg.sprite.Group()
 		self.pause_group = pg.sprite.Group()
 		self.buttons_group = pg.sprite.Group()
@@ -83,6 +86,8 @@ class Tanks:
 		self.fires = []
 		self.MYEVENTTYPE = pg.USEREVENT + 1
 		pg.time.set_timer(self.MYEVENTTYPE, 2000)
+		self.TIMEFORBOOSTERS = pg.USEREVENT + 2
+		pg.time.set_timer(self.TIMEFORBOOSTERS, 5000)
 		self.enemies_place_left = self.size[0] // 12
 		self.enemies_place_up = self.size[1] // 10
 		self.enemies_matrix = [[0 for j in range(
@@ -95,7 +100,9 @@ class Tanks:
 		self.coords_in_board = []
 		self.level = None
 
-		self.groups = [self.tanks_group, self.walls_group, self.tanks_group, self.buttons_group, self.fires_group, self.bush_group]
+		self.groups = [
+			self.tanks_group, self.walls_group, self.tanks_group,
+			self.buttons_group, self.fires_group, self.bush_group, self.boosters_group]
 
 	def run(self):
 		self.buttons_group.add(self.button_menu)
@@ -164,6 +171,9 @@ class Tanks:
 						if len(self.tanks_group) <= Tanks.max_count_enemies:
 							if self.generate_new_enemy(random.randint(0, 3)):
 								self.all_tanks_count += 1
+
+				if event.type == self.TIMEFORBOOSTERS:
+					self.generate_new_booster()
 
 			if self.space_is_down and self.frame_counter_shot == self.step_shot:  # СОЗДАНИЕ ПУЛИ ПРИ НАЖАТИИ ПРОБЕЛА
 				self.frame_counter_shot = 0
@@ -241,6 +251,17 @@ class Tanks:
 			return True
 		else:
 			return False
+
+	def generate_new_booster(self):
+		self.coords_in_board1 = []
+		for row in range(len(self.level.vis_board)):
+			for col in range(len(self.level.vis_board[0])):
+				if self.level.vis_board[row][col] == '0':
+					self.coords_in_board1.append([col, row])
+
+		if len(self.boosters_group) == 0 and self.coords_in_board1:
+			Booster(self, random.choice(self.coords_in_board1))
+
 
 	def terminate(self):
 		pg.quit()
