@@ -29,6 +29,9 @@ class WinScreen(pg.sprite.Sprite):
         self.game.screen.blit(self.base_image, (0, 0))
         print_kills(self)
 
+    def set_can_move(self, f):
+        pass
+
 
 
 if __name__ == '__main__':

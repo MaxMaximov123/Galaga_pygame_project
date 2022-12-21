@@ -107,6 +107,7 @@ class Creater:
                         mods = pygame.key.get_mods()
                         if mods & pygame.KMOD_CTRL:
                             f = False
+                            board.vis_board[-1][config.SIZE_BOARD_FOR_TANKS[0] // 2] = '0'
                             with open(f'Games/Tanks_objects/data/levels/level{len(next(os.walk("Games/Tanks_objects/data/levels"))[2])}.csv',
                                       'w', newline='', encoding="utf8") as csvfile:
                                 writer = csv.writer(
@@ -130,7 +131,7 @@ class Creater:
                 time.sleep(2)
                 for i in all_sprites:
                     i.kill()
-                exit()
+                running = False
             pygame.display.flip()
         for i in all_sprites:
             i.kill()

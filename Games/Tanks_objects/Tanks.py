@@ -60,7 +60,7 @@ class Tanks:
 
 		self.step_shot = config.FPS // 4  # сколько раз в секунду можно создавать выстрел
 		self.frame_counter_shot = self.step_shot
-		self.main_tank = MainTank((config.WIDTH // 2, config.HEIGHT // 15 * 13), self, power=3)
+		self.main_tank = MainTank((config.SIZE_BOARD_FOR_TANKS[0] // 2 * config.TILE_SIZE, config.HEIGHT - config.TILE_SIZE), self, power=3)
 		self.main_tank_moves = {
 			'left': self.main_tank.left_move,
 			'right': self.main_tank.right_move,
@@ -128,8 +128,12 @@ class Tanks:
 					if event.key in [pg.K_RIGHT, pg.K_d] and not self.is_pause:
 						self.button_down = 'right'
 
-					if event.key == pg.K_ESCAPE and not self.is_pause:
-						self.start_pause()
+					if event.key == pg.K_ESCAPE:
+						if not self.is_pause:
+							self.start_pause()
+						else:
+							self.running = False
+							self.is_close_win = True
 
 					if event.key in [pg.K_DOWN, pg.K_s] and not self.is_pause:
 						self.button_down = 'down'
@@ -158,8 +162,8 @@ class Tanks:
 				if event.type == self.MYEVENTTYPE:
 					if self.all_tanks_count < self.max_count_enemies_in_game:
 						if len(self.tanks_group) <= Tanks.max_count_enemies:
-							self.generate_new_enemy(random.randint(0, 3))
-							self.all_tanks_count += 1
+							if self.generate_new_enemy(random.randint(0, 3)):
+								self.all_tanks_count += 1
 
 			if self.space_is_down and self.frame_counter_shot == self.step_shot:  # СОЗДАНИЕ ПУЛИ ПРИ НАЖАТИИ ПРОБЕЛА
 				self.frame_counter_shot = 0
@@ -229,11 +233,14 @@ class Tanks:
 				if self.level.vis_board[row][col] == '0':
 					self.coords_in_board.append([col, row])
 
-		if len(self.tanks_group) <= Tanks.max_count_enemies:
+		if len(self.tanks_group) <= Tanks.max_count_enemies and self.coords_in_board:
 			enemy_tank = EnemyTank(random.choice(self.coords_in_board), self, power)
 			while not enemy_tank.tank_can_move() and self.coords_in_board:
 				enemy_tank.kill()
 				enemy_tank = EnemyTank(random.choice(self.coords_in_board), self, power)
+			return True
+		else:
+			return False
 
 	def terminate(self):
 		pg.quit()
