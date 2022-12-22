@@ -102,7 +102,7 @@ class Tanks:
 
 		self.groups = [
 			self.tanks_group, self.walls_group, self.tanks_group,
-			self.buttons_group, self.fires_group, self.bush_group, self.boosters_group]
+			self.buttons_group, self.fires_group, self.boosters_group, self.bush_group]
 
 	def run(self):
 		self.buttons_group.add(self.button_menu)
