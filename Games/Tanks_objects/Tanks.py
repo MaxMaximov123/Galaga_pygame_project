@@ -63,7 +63,7 @@ class Tanks:
 
 		self.step_shot = config.FPS // 4  # сколько раз в секунду можно создавать выстрел
 		self.frame_counter_shot = self.step_shot
-		self.main_tank = MainTank((config.SIZE_BOARD_FOR_TANKS[0] // 2 * config.TILE_SIZE, config.HEIGHT - config.TILE_SIZE), self, power=3)
+		self.main_tank = MainTank((config.SIZE_BOARD_FOR_TANKS[0] // 2 * config.TILE_SIZE, config.HEIGHT - config.TILE_SIZE), self, power=0)
 		self.main_tank_moves = {
 			'left': self.main_tank.left_move,
 			'right': self.main_tank.right_move,
@@ -93,6 +93,7 @@ class Tanks:
 		self.enemies_matrix = [[0 for j in range(
 			self.enemies_place_left * 4, self.enemies_place_left * 8, 60)] for _ in range(
 			self.enemies_place_up, self.enemies_place_up * 5, 30)]
+		self.boosters = [KillTanksBooster, StopTimeBooster, UpPowerBooster, ShieldBooster]
 
 		# Инициализация уровня
 		self.walls = []
@@ -167,13 +168,18 @@ class Tanks:
 							create = Creater(self)
 
 				if event.type == self.MYEVENTTYPE:
+					for tank in self.tanks_group:
+						if tank != self.main_tank:
+							tank.is_pause = False
 					if self.all_tanks_count < self.max_count_enemies_in_game:
 						if len(self.tanks_group) <= Tanks.max_count_enemies:
 							if self.generate_new_enemy(random.randint(0, 3)):
 								self.all_tanks_count += 1
 
 				if event.type == self.TIMEFORBOOSTERS:
-					self.generate_new_booster()
+					if random.choice(range(3)) == 0:
+						self.generate_new_booster()
+
 
 			if self.space_is_down and self.frame_counter_shot == self.step_shot:  # СОЗДАНИЕ ПУЛИ ПРИ НАЖАТИИ ПРОБЕЛА
 				self.frame_counter_shot = 0
@@ -260,7 +266,7 @@ class Tanks:
 					self.coords_in_board1.append([col, row])
 
 		if len(self.boosters_group) == 0 and self.coords_in_board1:
-			ShieldBooster(self, random.choice(self.coords_in_board1))
+			random.choice(self.boosters)(self, random.choice(self.coords_in_board1))
 
 
 	def terminate(self):

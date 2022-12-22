@@ -15,6 +15,7 @@ class MainTank(pg.sprite.Sprite):
 		self.speed = 300  # пикселе в секунду
 		self.powers = ['Games/Tanks_objects/data/images/main_tank0.png']
 		self.power = power
+		self.power1 = power
 		self.base_image = pg.image.load(f'Games/Tanks_objects/data/images/main_tank{power}.png')  # картинка спрайта
 		self.base_image.set_colorkey(self.base_image.get_at((0, 0)))
 		self.base_image = self.base_image.convert_alpha()
@@ -39,6 +40,13 @@ class MainTank(pg.sprite.Sprite):
 
 	def update(self, *args):
 		"""Обновление всех состояний танков"""
+		if self.power != self.power1:
+			self.base_image = pg.image.load(f'Games/Tanks_objects/data/images/main_tank{self.power}.png')  # картинка спрайта
+			self.base_image.set_colorkey(self.base_image.get_at((0, 0)))
+			self.base_image = self.base_image.convert_alpha()
+			self.base_image = pg.transform.scale(self.base_image, (self.size, self.size))
+			self.power1 = self.power
+			self.hp = self.hp + 1
 		if not self.game.is_pause:
 			self.frame_counter += 1
 			if self.frame_counter >= config.FPS:
@@ -159,6 +167,7 @@ class EnemyTank(MainTank):
 		self.base_image = self.base_image.convert_alpha()
 		self.vector_x = random.randint(-1, 1)
 		self.speed = 100
+		self.is_pause = False
 		if self.vector_x == 0:
 			self.vector_y = random.choice([-1, 1])
 		else:
@@ -203,7 +212,7 @@ class EnemyTank(MainTank):
 
 	def update(self, *args):
 		super().update(args)
-		if not self.game.is_pause:
+		if not self.is_pause and not self.game.is_pause:
 			if (config.FPS // self.shot_time) % config.FPS == self.frame_counter:
 				Fire(self.game, (
 					self.rect.x + self.size // 2,

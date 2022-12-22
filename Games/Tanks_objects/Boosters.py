@@ -4,13 +4,12 @@ from Games import config
 
 
 class Booster(pg.sprite.Sprite):
-	def __init__(self, game, pos):
+	def __init__(self, game, pos, path='Games/Tanks_objects/data/images/shield_booster.png'):
 		super().__init__(game.boosters_group)
 		self.size = 30, 30  # размер улучшения
 		self.game = game
 		self.f = 1
-		self.image = pg.image.load(
-			'Games/Tanks_objects/data/images/shield_booster.png')  # картинка спрайта  # контур спрайта
+		self.image = pg.image.load(path)  # картинка спрайта  # контур спрайта
 		self.image = pg.transform.scale(self.image, self.size)
 		self.image.set_colorkey((0, 0, 0))
 		self.image = self.image.convert_alpha()
@@ -72,3 +71,37 @@ class ShieldBooster(Booster):
 					self.count_shots -= 1
 					if self.count_shots <= 0:
 						self.kill()
+
+
+class StopTimeBooster(Booster):
+	def __init__(self, game, pos):
+		super().__init__(game, pos, path='Games/Tanks_objects/data/images/stop_time_booster.png')
+
+	def boost(self):
+		pg.time.set_timer(self.game.MYEVENTTYPE, 2000)
+		self.kill()
+		for tank in self.game.tanks_group:
+			if tank != self.game.main_tank:
+				tank.is_pause = True
+
+
+class UpPowerBooster(Booster):
+	def __init__(self, game, pos):
+		super().__init__(game, pos, path='Games/Tanks_objects/data/images/up_power_booster.png')
+
+	def boost(self):
+		self.kill()
+		if self.game.main_tank.power < 3:
+			self.game.main_tank.power += 1
+
+
+class KillTanksBooster(Booster):
+	def __init__(self, game, pos):
+		super().__init__(game, pos, path='Games/Tanks_objects/data/images/kill_tanks_booster.png')
+
+	def boost(self):
+		self.kill()
+		for tank in self.game.tanks_group:
+			if tank != self.game.main_tank:
+				self.game.kill_counts[tank.power] += 1
+				tank.kill()
