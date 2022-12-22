@@ -260,7 +260,7 @@ class Tanks:
 					self.coords_in_board1.append([col, row])
 
 		if len(self.boosters_group) == 0 and self.coords_in_board1:
-			Booster(self, random.choice(self.coords_in_board1))
+			ShieldBooster(self, random.choice(self.coords_in_board1))
 
 
 	def terminate(self):
