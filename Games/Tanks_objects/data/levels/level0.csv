@@ -1,4 +1,4 @@
-0	xz	0	0	0	0	0	0	0	0	0	0	0	iu	i	0
+0	xz	0	0	0	0	0	0	0	0	0	0	0	iu	0	0
 w	w	0	0	bd	0	bd	bl	bu	0	b	0	il	xz	br	ir
 w	w	bu	b	bu	0	bu	bu	br	bd	bl	i	xz	xz	xz	ir
 w	br	0	sh	sh	sh	0	sh	0	0	0	sh	xz	xz	xz	xz
@@ -6,4 +6,4 @@ xz	br	0	0	0	0	br	0	0	0	0	sh	xz	0	ir	xz
 xz	0	bu	bd	bd	bd	bd	bd	bd	bd	bd	xz	xz	xz	ir	0
 xz	0	0	0	b	0	0	sh	0	0	bl	br	0	xz	xz	bl
 w	xz	0	b	0	br	0	0	0	0	bl	0	il	0	xz	ir
-w	bd	bd	0	0	0	0	0	0	bd	bd	0	0	iu	iu	0
+w	bd	bd	0	0	0	0	0	0	bd	bd	0	0	iu	0	0

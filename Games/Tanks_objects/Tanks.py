@@ -37,7 +37,7 @@ def split_animated_gif(gif_file_path):
 class Tanks:
     level_num = 0  # НОМЕР УРОВНЯ
     max_count_enemies = 5  # количество врагов на экране в любой момент времен
-    max_count_enemies_in_game = random.randint(10, 15)  # количество врагов за всю игру
+    max_count_enemies_in_game = random.randint(15, 40)  # количество врагов за всю игру
 
     def __init__(self, main_win=None):
         # Базовые параметры для всех игр
@@ -57,57 +57,54 @@ class Tanks:
         self.pause = None  # ОБЪЕКТ ПАУЗА
         self.btn_home = None  # КНОПКА МЕНЮ
         self.size = config.WIDTH, config.HEIGHT  # РАЗМЕР ОКНА
-        self.clock = pg.time.Clock()
+        self.clock = pg.time.Clock()  # СОЗДАЕМ ОБЪЕКТ ЧАСЫ
 
         # НЕОБХОДИМЫЕ ГРУППЫ СПРАЙТОВ
-        self.fires_group = pg.sprite.Group()
-        self.boosters_group = pg.sprite.Group()
-        self.tanks_group = pg.sprite.Group()
-        self.pause_group = pg.sprite.Group()
-        self.buttons_group = pg.sprite.Group()
-        self.walls_group = pg.sprite.Group()
-        self.bush_group = pg.sprite.Group()
-        self.all_groups = pg.sprite.Group()
-        self.all_groups.add()
+        self.fires_group = pg.sprite.Group()  # ГРУППА ПУЛЬ
+        self.boosters_group = pg.sprite.Group()  # ГРУППА БОНУСОВ
+        self.tanks_group = pg.sprite.Group()  # ГРУППА ВСЕХ ТАНКОВ
+        self.pause_group = pg.sprite.Group()  # ГРУППА СПРАЙТОВ ДЛЯ ПАУЗЫ
+        self.buttons_group = pg.sprite.Group()  # ГРУППА КНОПОК
+        self.walls_group = pg.sprite.Group()  # ГРУППА СТЕН
+        self.bush_group = pg.sprite.Group()  # ГРУППА С КУСТАМИ
+        self.all_groups = pg.sprite.Group()  # ВСЕ СПРАЙТЫ
 
-        self.screen = pg.display.set_mode(self.size)
-        self.is_close_win = False
-        self.pause_screen = self.screen
-        self.step_move = 2
+        self.screen = pg.display.set_mode(self.size)  # ИНИЦИАЛИЗАЦИЯ ЭКРАНА
+        self.is_close_win = False  # ФЛАГ ЗАКРЫТОГО ОКНА
+        self.pause_screen = self.screen  # ЭКРАН ПАУЗЫ
+        self.step_move = 2  # ШАГ ДВИЖЕНИЯ
 
         self.step_shot = config.FPS // 4  # сколько раз в секунду можно создавать выстрел
-        self.frame_counter_shot = self.step_shot
-        self.main_tank = MainTank(
-            (config.SIZE_BOARD_FOR_TANKS[0] // 2 * config.TILE_SIZE, config.HEIGHT - config.TILE_SIZE), self, power=0)
+        self.frame_counter_shot = self.step_shot  # СЧЕТЧИК КАДРОВ
+        self.main_tank = MainTank((
+            config.SIZE_BOARD_FOR_TANKS[0] // 2 * config.TILE_SIZE,
+            config.HEIGHT - config.TILE_SIZE), self, power=0)  # СОЗДАНИЕ ПОЛЬЗОВАТЕЛЬСКОГО ТАНКА
         self.main_tank_moves = {
             'left': self.main_tank.left_move,
             'right': self.main_tank.right_move,
             'up': self.main_tank.up_move,
-            'down': self.main_tank.down_move}
+            'down': self.main_tank.down_move}  # ФУНКЦИИ ДВИЖЕНИЙ ВПЕРЕД
         self.reverse_main_tank_moves = {
             'right': self.main_tank.left_move,
             'left': self.main_tank.right_move,
             'down': self.main_tank.up_move,
-            'up': self.main_tank.down_move}
+            'up': self.main_tank.down_move}  # ЫУНКЦИИ ДВИЖЕНИЙ НАЗАД
         self.names_buttons = {
             'left': [pg.K_LEFT, pg.K_a],
             'right': [pg.K_RIGHT, pg.K_d],
             'up': [pg.K_UP, pg.K_w],
-            'down': [pg.K_DOWN, pg.K_s]}
-        self.kill_counts = [0, 0, 0, 0]
-        self.all_tanks_count = 0
-        self.button_menu = Button((30, 30), (30, 30), self.screen, path='Games/Tanks_objects/data/images/menu.png')
-        self.enemies = []
-        self.fires = []
-        self.MYEVENTTYPE = pg.USEREVENT + 1
+            'down': [pg.K_DOWN, pg.K_s]}  # КНОПКИ ДЛЯ ДВИЖЕНИЯ
+        self.kill_counts = [0, 0, 0, 0]  # КОЛ-ВО УБИТЫХ ТАНКОВ ПО КАТЕГОРИЯМ
+        self.all_tanks_count = 0  # КОЛ-ВО УБИТЫХ ТАНКОВ
+        self.button_menu = Button(
+            (30, 30), (30, 30), self.screen,
+            path='Games/Tanks_objects/data/images/menu.png')  # КНОПКА ПАУЗЫ
+        self.enemies = []  # ВРАЖЕСКИЕ ТАНКИ
+        self.fires = []  # СНАРДЫ ВЫСТРЕЛОВ
+        self.MYEVENTTYPE = pg.USEREVENT + 1  # СОБЫТИЕ ДЛЯ СОЗДАНИЯ ВРАЖЕСКОГО ТАНКА
         pg.time.set_timer(self.MYEVENTTYPE, 2000)
-        self.TIMEFORBOOSTERS = pg.USEREVENT + 2
+        self.TIMEFORBOOSTERS = pg.USEREVENT + 2  # СОБЫТИЕ ДЛЯ ПОЯВЛЕНИЯ БОНУСА
         pg.time.set_timer(self.TIMEFORBOOSTERS, 5000)
-        self.enemies_place_left = self.size[0] // 12
-        self.enemies_place_up = self.size[1] // 10
-        self.enemies_matrix = [[0 for j in range(
-            self.enemies_place_left * 4, self.enemies_place_left * 8, 60)] for _ in range(
-            self.enemies_place_up, self.enemies_place_up * 5, 30)]
         self.boosters = [KillTanksBooster, StopTimeBooster, UpPowerBooster, ShieldBooster]
 
         # Инициализация уровня
@@ -117,18 +114,21 @@ class Tanks:
         self.level = None
 
         self.groups = [
-            self.tanks_group, self.walls_group, self.tanks_group,
-            self.buttons_group, self.fires_group, self.boosters_group, self.bush_group]
+            self.tanks_group, self.walls_group,
+            self.tanks_group, self.buttons_group,
+            self.fires_group, self.boosters_group, self.bush_group]  # ВСЕ ГРУППЫ В ПОРЯДКЕ ИХ ОТРИСОВКИ
 
+    # ЗАПУСК ИГРЫИ ИГРОВОЙ ЦИКЛ
     def run(self):
         self.buttons_group.add(self.button_menu)
-        self.start_screen()
+        self.start_screen()  # ЗАПУСК СТАРТОВОГО ОКНА
         self.level = Levels.Level(
             self,
             f'Games/Tanks_objects/data/levels/level{self.level_num % len(self.levels)}.csv')  # ПУТЬ К ФАЙЛУ УРОВНЯ
         while self.running:
             self.screen.fill((0, 0, 0))
             self.main_tank.set_can_move(True)
+            # ОБРАБОТКА СОБЫТИЙ
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     self.running = False
@@ -212,7 +212,9 @@ class Tanks:
             else:
                 self.pause_group.draw(self.screen)
                 self.pause_group.update()
+            self.print_tank_counts()
 
+            # ПРОВЕРКА НА ПОБЕДУ
             if sum(self.kill_counts) >= self.max_count_enemies_in_game and not self.is_pause:
                 self.win()
             if self.button_down:  # НАЖАТИЕ ОДНОЙ ИЗ КНОПОК ДВИЖЕНИЯ
@@ -225,9 +227,11 @@ class Tanks:
             self.clock.tick(config.FPS)
             pg.display.update()
 
+    # ЗАКРЫТА ЛИ ИГРА
     def is_close(self):
         return self.is_close_win
 
+    # ЗАПУСК ПАУЗЫ
     def start_pause(self):
         self.is_pause = True
         self.pause = Pause((config.WIDTH // 2, config.HEIGHT // 5), self.screen)
@@ -236,15 +240,18 @@ class Tanks:
             f.set_can_move(False)
         self.pause_group.add(self.pause.buttons)
 
+    # ПРОДОЛЖЕНИЕ ИГРЫ
     def start(self):
         self.is_pause = False
         self.pause_group.remove(*self.pause.buttons)
         for f in self.fires_group:
             f.set_can_move(True)
 
+    # ЗАКРЫТИЕ ОКНА
     def close(self):
         pg.quit()
 
+    # ЗАПСК ОКНА ПРИГРЫША
     def game_over(self):
         self.is_pause = True
         self.pause_group.add(*self.groups)
@@ -252,11 +259,13 @@ class Tanks:
             f.set_can_move(False)
         self.all_groups.add(GameOver(self))
 
+    # ЗАПУСК ОКНА ВЫИГРЫША
     def win(self):
         self.is_pause = True
         self.pause_group.add(*self.groups)
         self.all_groups.add(WinScreen(self))
 
+    # СОЗДАНИЕ НОВОГО ВРАЖЕСКОГО ТАНКА
     def generate_new_enemy(self, power):
         self.coords_in_board = []
         for row in range(len(self.level.vis_board)):
@@ -273,6 +282,7 @@ class Tanks:
         else:
             return False
 
+    # СОЗДАНИЕ НОВОГО БОНУСА
     def generate_new_booster(self):
         self.coords_in_board1 = []
         for row in range(len(self.level.vis_board)):
@@ -283,22 +293,18 @@ class Tanks:
         if len(self.boosters_group) == 0 and self.coords_in_board1:
             random.choice(self.boosters)(self, random.choice(self.coords_in_board1))
 
+    # ЗАВЕРШЕНИЕ ИГРЫ ПРИ ЗАКРЫТИИ ОКНА
     def terminate(self):
         pg.quit()
         sys.exit()
 
+    # СТАРТОВОЕ ОКНО
     def start_screen(self):
         frames = []
         for frame in split_animated_gif("Games/Tanks_objects/data/images/fon.gif"):
-            frames += [frame] * 7
+            frames += [frame] * 6
 
         frame_index = 0
-
-        intro_text = ["ТАНКИ 1.0", "",
-                      "Правила игры:",
-                      "Используйте клавиши стрелок или WASD",
-                      "для движения и пробел для стрельбы"]
-
         fon = pg.transform.scale(frames[frame_index % len(frames)],
                                  (config.WIDTH, config.HEIGHT))
         self.screen.blit(fon, (0, 0))
@@ -326,7 +332,6 @@ class Tanks:
             pg.display.flip()
             self.clock.tick(config.FPS)
 
-
     def print_level(self, level):
         intro_text = ["ТАНКИ 1.0", "",
                       "Правила игры:",
@@ -349,6 +354,15 @@ class Tanks:
         intro_rect.x = 10
         text_coord += intro_rect.height
         self.screen.blit(string_rendered, intro_rect)
+
+    def print_tank_counts(self):
+        if not self.is_pause:
+            font = pg.font.Font(None, 60)
+            string_rendered = font.render(f'{sum(self.kill_counts)} / {self.max_count_enemies_in_game}', 1, pg.Color('#e49b0f'))
+            intro_rect = string_rendered.get_rect()
+            intro_rect.top = config.TILE_SIZE // 4
+            intro_rect.x = config.WIDTH - config.TILE_SIZE * 2
+            self.screen.blit(string_rendered, intro_rect)
 
 
 if __name__ == '__main__':

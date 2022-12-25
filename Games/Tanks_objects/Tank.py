@@ -6,6 +6,7 @@ from copy import deepcopy
 import time
 
 
+# КЛАСС ПОЛЬЗОВАТЕЛЬСКОГО ТАНКА
 class MainTank(pg.sprite.Sprite):
 	def __init__(self, pos, game, power=0):
 		super().__init__(game.tanks_group)
@@ -14,7 +15,7 @@ class MainTank(pg.sprite.Sprite):
 		self.size = config.TILE_SIZE - 4  # размер танка
 		self.speed = 300  # пикселе в секунду
 		self.powers = ['Games/Tanks_objects/data/images/main_tank0.png']
-		self.power = power
+		self.power = power  # МОЩНОСТЬ ТАНКА
 		self.power1 = power
 		self.base_image = pg.image.load(f'Games/Tanks_objects/data/images/main_tank{power}.png')  # картинка спрайта
 		self.base_image.set_colorkey(self.base_image.get_at((0, 0)))
@@ -24,20 +25,22 @@ class MainTank(pg.sprite.Sprite):
 		self.rect = self.image.get_rect()  # контур спрайта
 		self.rect.x, self.rect.y = self.pos
 		self.time_og_showing_hp = 0.1  # КАКУЮ ЧАСТЬ СЕКУНДЫ БУДЕТ ПОКАЗЫВАТЬСЯ HP
-		self.game = game
+		self.game = game  # КЛАСС ИГРЫ
 		self.vector_x = 0
 		self.vector_y = -1
-		self.can_move = True
+		self.can_move = True  # ВОЗМОЖНОСТЬ ДВИГАТЬСЯ
 		self.x, self.y = self.rect.x, self.rect.y
-		self.hp = self.power + 1
+		self.hp = self.power + 100  # КОЛ-ВО ЖИЗНЕЙ
 		self.frame_for_drawing_hp = None
 		self.frame_counter = 0
 		self.do_rotation = False
-		self.last_vector_x, self.last_vector_y = self.vector_x, self.vector_y
+		self.last_vector_x, self.last_vector_y = self.vector_x, self.vector_y  # ПРЕДЫДУЩИЙ ВЕКТОР
 
+	# ВОЗМОЖНОСТЬ ДВИГАТЬСЯ
 	def set_can_move(self, f):
 		self.can_move = f
 
+	# ОБНОВЛЕНИЕ ВСЕХ ДАННЫХ ТАНКА
 	def update(self, *args):
 		"""Обновление всех состояний танков"""
 		if self.power != self.power1:
@@ -65,6 +68,7 @@ class MainTank(pg.sprite.Sprite):
 				else:
 					self.frame_for_drawing_hp = None
 
+	# ПРОВЕРКА ВОЗМОЖНОСТИ ДВИЖЕНИЯ
 	def tank_can_move(self):
 		if pg.sprite.spritecollide(self, self.game.tanks_group, False):  # СТОЛКНОВЕНИЕ С ТАНКОМ
 			obj = pg.sprite.spritecollide(self, self.game.tanks_group, False)
@@ -74,6 +78,7 @@ class MainTank(pg.sprite.Sprite):
 					self.step_back(self, step=1)
 					self.do_rotation = True
 
+		# СТОЛКНОВЕНИЕ СО СТЕНОЙ
 		if any([i.tank_can_move() for i in pg.sprite.spritecollide(self, self.game.walls_group, False)]):  # СТОЛКНОВЕНИЕ СО СТЕНОЙ
 			self.step_back(self, step=1)
 			self.do_rotation = True
@@ -91,6 +96,7 @@ class MainTank(pg.sprite.Sprite):
 		self.set_can_move(True)
 		return True
 
+	# ДВИЖЕНИЕ ВЛЕВО
 	def left_move(self, f=True):  # движение влево
 		self.tank_can_move()
 		if self.x >= 0:
@@ -101,6 +107,7 @@ class MainTank(pg.sprite.Sprite):
 			self.vector_x = -1
 			self.vector_y = 0
 
+	# ДВИЖЕНИЕ ВПРАВО
 	def right_move(self, f=True):  # движение вправо
 		self.tank_can_move()
 		if self.x + self.size <= config.WIDTH:
@@ -111,6 +118,7 @@ class MainTank(pg.sprite.Sprite):
 			self.vector_x = 1
 			self.vector_y = 0
 
+	# ДВИЖЕНИЕ ВВЕРХ
 	def up_move(self, f=True):  # движение влево
 		self.tank_can_move()
 		if self.y >= 0:
@@ -121,6 +129,7 @@ class MainTank(pg.sprite.Sprite):
 			self.vector_x = 0
 			self.vector_y = -1
 
+	# ДВИЖЕНИЕ ВНИЗ
 	def down_move(self, f=True):  # движение вправо
 		self.tank_can_move()
 		if self.y + self.size <= config.HEIGHT:
@@ -131,9 +140,11 @@ class MainTank(pg.sprite.Sprite):
 			self.vector_x = 0
 			self.vector_y = 1
 
+	# СТОЛКНОВЕНИЕ
 	def is_collided_with(self, sprite):
 		return self.rect.colliderect(sprite.rect)
 
+	# ОТРИСОВКА ЖИЗНЕЙ
 	def draw_hp(self, f=True):
 		font = pg.font.SysFont('monospace', 30)
 		text = font.render(str(100 * self.hp), True, (255, 0, 0))
@@ -141,7 +152,7 @@ class MainTank(pg.sprite.Sprite):
 		if f:
 			self.frame_for_drawing_hp = self.frame_counter - 1
 
-
+	# ШАГ НАЗАД
 	def step_back(self, tank, step=1, rev=False):
 		if rev:
 			if config.WIDTH >= tank.x + tank.speed / config.FPS * tank.vector_x * step + tank.size >= tank.size:
@@ -154,19 +165,20 @@ class MainTank(pg.sprite.Sprite):
 			if config.HEIGHT >= tank.y - tank.speed / config.FPS * tank.vector_y * step + tank.size >= tank.size:
 				tank.y -= tank.speed / config.FPS * tank.vector_y * step
 		self.rect.x, self.rect.y = self.x, self.y
-		# self.set_can_move(True)
 
 
+# КЛАСС ВРАЖЕСКОГО ТАНКА, НАСЛЕДУЕТСЯ ОТ ПОЛЬЗОВАТЕЛЬСКОГО
 class EnemyTank(MainTank):
 	def __init__(self, pos, game, power):
 		super().__init__(pos, game, power)
-		self.shot_time = 1  # выстрелов в секунду
+		self.shot_time = 1 + power / 4  # выстрелов в секунду
 		self.base_image = pg.image.load(f'Games/Tanks_objects/data/images/enemy_tank{power}.png')  # картинка спрайта
 		self.base_image = pg.transform.scale(self.base_image, (self.size, self.size))
 		self.base_image.set_colorkey(self.base_image.get_at((0, 0)))
 		self.base_image = self.base_image.convert_alpha()
 		self.vector_x = random.randint(-1, 1)
 		self.speed = 100
+		self.hp = self.power + 1
 		self.is_pause = False
 		if self.vector_x == 0:
 			self.vector_y = random.choice([-1, 1])
@@ -191,6 +203,7 @@ class EnemyTank(MainTank):
 		self.game = game
 		self.last_vector_x, self.last_vector_y = self.vector_x, self.vector_y
 
+	# ДВИЖЕНИЕ ТАНКА В ЗАВИСИМОСТИ ОТ ВЕКТОРА
 	def move0(self, f=True):
 		if self.vector_x == 1:
 			self.right_move(f)
@@ -201,6 +214,7 @@ class EnemyTank(MainTank):
 		if self.vector_y == -1:
 			self.up_move(f)
 
+	# ДВИЖЕНИЕ ДЛЯ ВСЕХ ТИПОВ ВРАЖЕСКИХ ТАНКОВ
 	def move1(self, f=True):
 		self.move0(f)
 
@@ -210,13 +224,15 @@ class EnemyTank(MainTank):
 	def move3(self, f=True):
 		self.move0(f)
 
+	# ОБНОВЛЕНИЕ ВСЕХ ПАРАМЕТРОВ ТАНКА
 	def update(self, *args):
 		super().update(args)
 		if not self.is_pause and not self.game.is_pause:
-			if (config.FPS // self.shot_time) % config.FPS == self.frame_counter:
+			if (config.FPS / self.shot_time) % config.FPS == self.frame_counter:
 				Fire(self.game, (
 					self.rect.x + self.size // 2,
 					self.rect.y + self.size // 2), False, self.vector_x, self.vector_y)
+				self.frame_counter = 0
 			if self.do_rotation:
 				random.choice(self.moves)(False)
 				self.do_rotation = False

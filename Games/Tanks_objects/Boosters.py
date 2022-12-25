@@ -62,7 +62,7 @@ class ShieldBooster(Booster):
 			self.rect = self.image.get_rect(center=(
 				self.game.main_tank.rect.x + config.TILE_SIZE // 2,
 				self.game.main_tank.rect.y + config.TILE_SIZE // 2))
-			pg.draw.circle(self.game.screen, 'blue', self.rect.center,
+			pg.draw.circle(self.game.screen, '#42aaff', self.rect.center,
 				config.TILE_SIZE * 2 ** 0.5 // 2, 3)
 
 			for fire in pg.sprite.spritecollide(self, self.game.fires_group, False):

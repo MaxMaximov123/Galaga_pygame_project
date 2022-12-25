@@ -4,11 +4,10 @@ import sys
 from Games import config
 
 
-
 def print_kills(self):
 	for j in range(len(self.vis_kills)):
 		if self.vis_kills[j] < self.game.kill_counts[j]:
-			self.vis_kills[j] += 0.02
+			self.vis_kills[j] += 0.025
 			break
 	for i in range(len(self.vis_kills)):
 		if self.vis_kills[i] >= 0:
