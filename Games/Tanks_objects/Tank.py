@@ -28,12 +28,18 @@ class MainTank(pg.sprite.Sprite):
 		self.game = game  # КЛАСС ИГРЫ
 		self.vector_x = 0
 		self.vector_y = -1
+		self.move_rot = None
 		self.can_move = True  # ВОЗМОЖНОСТЬ ДВИГАТЬСЯ
 		self.x, self.y = self.rect.x, self.rect.y
 		self.hp = self.power + 100  # КОЛ-ВО ЖИЗНЕЙ
 		self.frame_for_drawing_hp = None
 		self.frame_counter = 0
 		self.do_rotation = False
+		self.reverse_moves = {
+			'right': self.left_move,
+			'left': self.right_move,
+			'down': self.up_move,
+			'up': self.down_move}
 		self.last_vector_x, self.last_vector_y = self.vector_x, self.vector_y  # ПРЕДЫДУЩИЙ ВЕКТОР
 
 	# ВОЗМОЖНОСТЬ ДВИГАТЬСЯ
@@ -228,13 +234,14 @@ class EnemyTank(MainTank):
 	def update(self, *args):
 		super().update(args)
 		if not self.is_pause and not self.game.is_pause:
-			if (config.FPS / self.shot_time) % config.FPS == self.frame_counter:
+			if (config.FPS // self.shot_time) % config.FPS == self.frame_counter:
 				Fire(self.game, (
 					self.rect.x + self.size // 2,
 					self.rect.y + self.size // 2), False, self.vector_x, self.vector_y)
 				self.frame_counter = 0
 			if self.do_rotation:
-				random.choice(self.moves)(False)
+				self.move_rot = random.choice(self.moves)
+				self.move_rot(False)
 				self.do_rotation = False
 			else:
 				self.moves_by_power[self.power]()

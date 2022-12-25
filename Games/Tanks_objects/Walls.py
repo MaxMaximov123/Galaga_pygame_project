@@ -2,6 +2,7 @@ import pygame as pg
 from Games import config
 
 
+# БАЗОВЫЙ КЛАСС СТЕНЫ
 class Wall(pg.sprite.Sprite):
 	can_move = True
 
@@ -9,13 +10,13 @@ class Wall(pg.sprite.Sprite):
 		super().__init__(game.walls_group)
 		self.pos = pos
 		self.type = type_
+		self.can_move = True
 		self.x, self.y = config.TILE_SIZE * self.pos[0], config.TILE_SIZE * self.pos[1]
 
 	def set_can_move(self, f):
-		Wall.can_move = f
+		self.can_move = f
 
 	def update(self, *args):
-		self.tank_can_move()
 		self.render()
 
 	def is_collided_with(self, sprite):
@@ -33,6 +34,7 @@ class Wall(pg.sprite.Sprite):
 		return False
 
 
+# КЛАСС КИРПИЧНОЙ СТЕНКИ
 class Brick(Wall):
 	def __init__(self, game, pos, type_='b'):
 		super().__init__(game, pos, type_=type_)
@@ -54,10 +56,7 @@ class Brick(Wall):
 		self.can_move = True
 		self.update()
 
-
-	def update(self, *args):
-		self.render()
-
+	# МЕХАНИКА РАЗРУШЕНИЙ
 	def destruction(self, fire):
 		if fire.vector_y < 0:
 			if self.type_ == 'b':
@@ -91,7 +90,7 @@ class Brick(Wall):
 			self.kill()
 		return True
 
-
+	# ОТРИСОВКА
 	def render(self):
 		if self.type_ == 'b':
 			self.image = self.image0
@@ -122,6 +121,7 @@ class Brick(Wall):
 			self.size = self.base_size[0], self.base_size[1] // 2
 
 
+# КЛАСС ЖЕЛЕЗНОЙ СТЕНКИ
 class Iron(Wall):
 	def __init__(self, game, pos, type_='i'):
 		super().__init__(game, pos, type_=type_)
@@ -130,11 +130,11 @@ class Iron(Wall):
 		self.game = game
 		self.pos = pos
 		self.type_ = type_
-		self.image0 = pg.image.load('Games/Tanks_objects/data/images/iron.png').convert_alpha()  # картинка спрайта  # контур спрайта
-		self.image_r = pg.image.load('Games/Tanks_objects/data/images/ironR.png').convert_alpha()  # картинка спрайта  # контур спрайта
-		self.image_l = pg.image.load('Games/Tanks_objects/data/images/ironL.png').convert_alpha()  # картинка спрайта  # контур спрайта
-		self.image_u = pg.image.load('Games/Tanks_objects/data/images/ironU.png').convert_alpha()  # картинка спрайта  # контур спрайта
-		self.image_d = pg.image.load('Games/Tanks_objects/data/images/ironD.png').convert_alpha()  # картинка спрайта  # контур спрайта
+		self.image0 = pg.image.load('Games/Tanks_objects/data/images/iron.png').convert_alpha()
+		self.image_r = pg.image.load('Games/Tanks_objects/data/images/ironR.png').convert_alpha()
+		self.image_l = pg.image.load('Games/Tanks_objects/data/images/ironL.png').convert_alpha()
+		self.image_u = pg.image.load('Games/Tanks_objects/data/images/ironU.png').convert_alpha()
+		self.image_d = pg.image.load('Games/Tanks_objects/data/images/ironD.png').convert_alpha()
 		self.image0 = pg.transform.scale(self.image0, self.base_size)
 		self.image_r = pg.transform.scale(self.image_r, (self.base_size[0] // 2, self.base_size[1]))
 		self.image_l = pg.transform.scale(self.image_l, (self.base_size[0] // 2, self.base_size[1]))
@@ -143,12 +143,7 @@ class Iron(Wall):
 		self.can_move = True
 		self.update()
 
-
-	def update(self, *args):
-		self.render()
-		self.tank_can_move()
-
-
+	# МЕХАНИКА РАЗРУШЕНИЯ
 	def destruction(self, fire):
 		if fire.from_main_tank and self.game.main_tank.power >= 3:
 			if fire.vector_y < 0:
@@ -184,7 +179,7 @@ class Iron(Wall):
 				return True
 		return True
 
-
+	# ОТРИСОВКА
 	def render(self):
 		if self.type_ == 'i':
 			self.image = self.image0
@@ -215,6 +210,7 @@ class Iron(Wall):
 			self.size = self.base_size[0], self.base_size[1] // 2
 
 
+# КЛАСС ВРОДЕ ЛЬДА(НЕ УВЕРЕН, ЧТО ЭТО ИМЕННО ЛЕД)
 class IronXZ(Wall):
 	def __init__(self, game, pos, type_='xz'):
 		super().__init__(game, pos, type_=type_)
@@ -229,22 +225,13 @@ class IronXZ(Wall):
 		self.update()
 
 
-	def update(self, *args):
-		self.render()
-		self.tank_can_move()
-
-	def is_collided_with(self, sprite):
-		return self.rect.colliderect(sprite.rect)
-
-
 	def tank_can_move(self):
 		pass
-
 
 	def destruction(self, fire):
 		return False
 
-
+	# ОТРИСОВКА
 	def render(self):
 		if self.type_ == 'xz':
 			self.image = self.image0
@@ -253,6 +240,7 @@ class IronXZ(Wall):
 			self.size = self.base_size
 
 
+# КЛАСС ВОДЫ
 class Water(Wall):
 	def __init__(self, game, pos, type_='w'):
 		super().__init__(game, pos, type_=type_)
@@ -266,12 +254,6 @@ class Water(Wall):
 		self.can_move = True
 		self.update()
 
-
-	def update(self, *args):
-		self.render()
-		self.tank_can_move()
-
-
 	def render(self):
 		if self.type_ == 'w':
 			self.image = self.image0
@@ -280,6 +262,7 @@ class Water(Wall):
 			self.size = self.base_size
 
 
+# КЛАСС КУСТА
 class Bush(pg.sprite.Sprite):
 	def __init__(self, game, pos, type_='sh'):
 		super().__init__(game.bush_group)
@@ -295,11 +278,9 @@ class Bush(pg.sprite.Sprite):
 		self.can_move = True
 		self.update()
 
-
 	def update(self, *args):
 		self.render()
 		self.tank_can_move()
-
 
 	def render(self):
 		if self.type_ == 'sh':
@@ -308,17 +289,10 @@ class Bush(pg.sprite.Sprite):
 			self.rect.x, self.rect.y = self.base_size[0] * self.pos[0], self.base_size[1] * self.pos[1]
 			self.size = self.base_size
 
-
 	def tank_can_move(self):
 		pass
 
-
 	def set_can_move(self, f):
-		Wall.can_move = f
-
-	def is_collided_with(self, sprite):
-		return self.rect.colliderect(sprite.rect)
+		self.can_move = f
 
 
-	def destruction(self, fire):
-		return False

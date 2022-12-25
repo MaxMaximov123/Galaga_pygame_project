@@ -184,15 +184,16 @@ class Tanks:
                             create = Creater(self)
 
                 if event.type == self.MYEVENTTYPE:
-                    for tank in self.tanks_group:
-                        if tank != self.main_tank:
-                            tank.is_pause = False
-                    if self.all_tanks_count < self.max_count_enemies_in_game:
-                        if len(self.tanks_group) <= Tanks.max_count_enemies:
-                            if self.generate_new_enemy(random.randint(0, 3)):
-                                self.all_tanks_count += 1
+                    if not self.is_pause:
+                        for tank in self.tanks_group:
+                            if tank != self.main_tank:
+                                tank.is_pause = False
+                        if self.all_tanks_count < self.max_count_enemies_in_game:
+                            if len(self.tanks_group) <= Tanks.max_count_enemies:
+                                if self.generate_new_enemy(random.randint(0, 3)):
+                                    self.all_tanks_count += 1
 
-                if event.type == self.TIMEFORBOOSTERS:
+                if event.type == self.TIMEFORBOOSTERS and not self.is_pause:
                     if random.choice(range(3)) == 0:
                         self.generate_new_booster()
 
