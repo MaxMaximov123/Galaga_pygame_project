@@ -31,9 +31,7 @@ def split_animated_gif(gif_file_path):
     return ret
 
 
-# from Main_window import MainWindow
-
-
+# КЛАСС ИГРЫ
 class Tanks:
     level_num = 0  # НОМЕР УРОВНЯ
     max_count_enemies = 5  # количество врагов на экране в любой момент времен
@@ -303,7 +301,7 @@ class Tanks:
     def start_screen(self):
         frames = []
         for frame in split_animated_gif("Games/Tanks_objects/data/images/fon.gif"):
-            frames += [frame] * 6
+            frames += [frame] * 10
 
         frame_index = 0
         fon = pg.transform.scale(frames[frame_index % len(frames)],
@@ -359,7 +357,7 @@ class Tanks:
     def print_tank_counts(self):
         if not self.is_pause:
             font = pg.font.Font(None, 60)
-            string_rendered = font.render(f'{sum(self.kill_counts)} / {self.max_count_enemies_in_game}', 1, pg.Color('#e49b0f'))
+            string_rendered = font.render(f'{sum(self.kill_counts)} / {self.max_count_enemies_in_game}', 1, pg.Color('#ffcc00'))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = config.TILE_SIZE // 4
             intro_rect.x = config.WIDTH - config.TILE_SIZE * 2

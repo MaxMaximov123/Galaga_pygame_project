@@ -242,6 +242,7 @@ class EnemyTank(MainTank):
 			if self.do_rotation:
 				self.move_rot = random.choice(self.moves)
 				self.move_rot(False)
+				self.move_rot(False)
 				self.do_rotation = False
 			else:
 				self.moves_by_power[self.power]()
@@ -251,4 +252,3 @@ class EnemyTank(MainTank):
 					self.draw_hp(f=False)
 				else:
 					self.frame_for_drawing_hp = None
-
