@@ -10,6 +10,7 @@ import time
 class MainTank(pg.sprite.Sprite):
 	def __init__(self, pos, game, power=0):
 		super().__init__(game.tanks_group)
+		self.game = game  # КЛАСС ИГРЫ
 		self.pos = pos
 		self.copy_img = None
 		self.size = config.TILE_SIZE - 4  # размер танка
@@ -17,6 +18,7 @@ class MainTank(pg.sprite.Sprite):
 		self.powers = ['Games/Tanks_objects/data/images/main_tank0.png']
 		self.power = power  # МОЩНОСТЬ ТАНКА
 		self.power1 = power
+		self.game.step_shot = config.FPS // (4 + self.power * 2)
 		self.base_image = pg.image.load(f'Games/Tanks_objects/data/images/main_tank{power}.png')  # картинка спрайта
 		self.base_image.set_colorkey(self.base_image.get_at((0, 0)))
 		self.base_image = self.base_image.convert_alpha()
@@ -25,13 +27,12 @@ class MainTank(pg.sprite.Sprite):
 		self.rect = self.image.get_rect()  # контур спрайта
 		self.rect.x, self.rect.y = self.pos
 		self.time_og_showing_hp = 0.1  # КАКУЮ ЧАСТЬ СЕКУНДЫ БУДЕТ ПОКАЗЫВАТЬСЯ HP
-		self.game = game  # КЛАСС ИГРЫ
 		self.vector_x = 0
 		self.vector_y = -1
 		self.move_rot = None
 		self.can_move = True  # ВОЗМОЖНОСТЬ ДВИГАТЬСЯ
 		self.x, self.y = self.rect.x, self.rect.y
-		self.hp = self.power + 100  # КОЛ-ВО ЖИЗНЕЙ
+		self.hp = self.power + 1  # КОЛ-ВО ЖИЗНЕЙ
 		self.frame_for_drawing_hp = None
 		self.frame_counter = 0
 		self.do_rotation = False
@@ -49,6 +50,7 @@ class MainTank(pg.sprite.Sprite):
 	# ОБНОВЛЕНИЕ ВСЕХ ДАННЫХ ТАНКА
 	def update(self, *args):
 		"""Обновление всех состояний танков"""
+		self.game.step_shot = config.FPS // (4 + self.power)
 		if self.power != self.power1:
 			self.base_image = pg.image.load(f'Games/Tanks_objects/data/images/main_tank{self.power}.png')  # картинка спрайта
 			self.base_image.set_colorkey(self.base_image.get_at((0, 0)))
