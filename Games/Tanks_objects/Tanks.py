@@ -16,6 +16,7 @@ from Games.Tanks_objects.Win_screen import WinScreen
 from os.path import isfile, join
 from Games.Tanks_objects.Boosters import *
 from PIL import Image
+import time
 
 
 def split_animated_gif(gif_file_path):
@@ -49,6 +50,7 @@ class Tanks:
             isfile(join('Games/Tanks_objects/data/levels', f))]  # ОБЪЕКТЫ УРОВНИ
         self.main_win = main_win  # СТАРТОВОЕ ОКНО
         self.button_down = ''  # КАКАЯ КНОПКА НАЖАТА
+        self.last_button_down = ''
         self.space_is_down = False  # НАЖАТ ЛИ ПРОБЕЛ
         self.running = True  # ЗАПУСК ИГРЫ
         self.is_pause = False  # ЗАПУЩЕНА ЛИ ПАУЗА
@@ -56,6 +58,14 @@ class Tanks:
         self.btn_home = None  # КНОПКА МЕНЮ
         self.size = config.WIDTH, config.HEIGHT  # РАЗМЕР ОКНА
         self.clock = pg.time.Clock()  # СОЗДАЕМ ОБЪЕКТ ЧАСЫ
+
+        # ЗВУКИ
+        self.sound_shot = pg.mixer.Sound("Games/Tanks_objects/data/sounds/shot.mp3")
+        self.sound_shot.set_volume(0.2)
+        self.sound_sart = pg.mixer.Sound("Games/Tanks_objects/data/sounds/start.mp3")
+        self.sound_sart.set_volume(0.2)
+        self.sound_kill = pg.mixer.Sound("Games/Tanks_objects/data/sounds/kill.mp3")
+        self.sound_kill.set_volume(0.2)
 
         # НЕОБХОДИМЫЕ ГРУППЫ СПРАЙТОВ
         self.fires_group = pg.sprite.Group()  # ГРУППА ПУЛЬ
@@ -65,6 +75,7 @@ class Tanks:
         self.buttons_group = pg.sprite.Group()  # ГРУППА КНОПОК
         self.walls_group = pg.sprite.Group()  # ГРУППА СТЕН
         self.bush_group = pg.sprite.Group()  # ГРУППА С КУСТАМИ
+        self.ice_group = pg.sprite.Group()  # ГРУППА С КУСТАМИ
         self.all_groups = pg.sprite.Group()  # ВСЕ СПРАЙТЫ
 
         self.screen = pg.display.set_mode(self.size)  # ИНИЦИАЛИЗАЦИЯ ЭКРАНА
@@ -118,11 +129,13 @@ class Tanks:
 
     # ЗАПУСК ИГРЫИ ИГРОВОЙ ЦИКЛ
     def run(self):
+        flag_ice = False
         self.buttons_group.add(self.button_menu)
         self.start_screen()  # ЗАПУСК СТАРТОВОГО ОКНА
         self.level = Levels.Level(
             self,
             f'Games/Tanks_objects/data/levels/level{self.level_num % len(self.levels)}.csv')  # ПУТЬ К ФАЙЛУ УРОВНЯ
+        self.sound_sart.play()
         while self.running:
             self.screen.fill((0, 0, 0))
             self.main_tank.set_can_move(True)
@@ -195,23 +208,17 @@ class Tanks:
                     if random.choice(range(3)) == 0:
                         self.generate_new_booster()
 
-            if self.space_is_down and self.frame_counter_shot == self.step_shot:  # СОЗДАНИЕ ПУЛИ ПРИ НАЖАТИИ ПРОБЕЛА
+            if self.button_down:
+                self.last_button_down = self.button_down
+
+            if self.space_is_down and self.frame_counter_shot == self.step_shot and self.main_tank.hp:  # СОЗДАНИЕ ПУЛИ ПРИ НАЖАТИИ ПРОБЕЛА
                 self.frame_counter_shot = 0
                 Fire(self, (
                     self.main_tank.rect.x + self.main_tank.size // 2,
                     self.main_tank.rect.y + self.main_tank.size // 2),
                      True,
                      self.main_tank.vector_x, self.main_tank.vector_y)
-
-            if not self.is_pause:  # УСЛОВИЕ НА ЗАПУЩЕННУЮ ИГРУ
-                # ОБНОВЛЯЕМ ВСЕ ГРУППЫ
-                for group in self.groups:
-                    group.draw(self.screen)
-                    group.update()
-            else:
-                self.pause_group.draw(self.screen)
-                self.pause_group.update()
-            self.print_tank_counts()
+                self.sound_shot.play()
 
             # ПРОВЕРКА НА ПОБЕДУ
             if sum(self.kill_counts) >= self.max_count_enemies_in_game and not self.is_pause:
@@ -219,6 +226,22 @@ class Tanks:
             if self.button_down:  # НАЖАТИЕ ОДНОЙ ИЗ КНОПОК ДВИЖЕНИЯ
                 if self.main_tank.can_move:
                     self.main_tank_moves[self.button_down]()
+
+            if not self.is_pause:  # УСЛОВИЕ НА ЗАПУЩЕННУЮ ИГРУ
+                # ОБНОВЛЯЕМ ВСЕ ГРУППЫ
+                for group in self.groups:
+                    group.draw(self.screen)
+                    group.update()
+                if pg.sprite.spritecollideany(self.main_tank, self.ice_group):
+                    self.button_down = self.last_button_down
+                    flag_ice = True
+                elif flag_ice:
+                    self.last_button_down = self.button_down = ''
+                    flag_ice = False
+            else:
+                self.pause_group.draw(self.screen)
+                self.pause_group.update()
+            self.print_tank_counts()
 
             self.frame_counter_shot += 1  # СЧЕТЧИК КАДРОВ
             if self.frame_counter_shot == config.FPS:

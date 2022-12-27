@@ -64,9 +64,11 @@ class MainTank(pg.sprite.Sprite):
 				self.frame_counter = 0
 			if self.hp <= 0 and self == self.game.main_tank:
 				self.game.game_over()
+				self.game.sound_kill.play()
 				self.kill()
 			elif self.hp <= 0:
 				self.game.kill_counts[self.power] += 1
+				self.game.sound_kill.play()
 				self.kill()
 			self.rect.x, self.rect.y = self.x, self.y
 			if self.frame_for_drawing_hp:
@@ -78,17 +80,16 @@ class MainTank(pg.sprite.Sprite):
 
 	# ПРОВЕРКА ВОЗМОЖНОСТИ ДВИЖЕНИЯ
 	def tank_can_move(self):
-		if pg.sprite.spritecollide(self, self.game.tanks_group, False):  # СТОЛКНОВЕНИЕ С ТАНКОМ
-			obj = pg.sprite.spritecollide(self, self.game.tanks_group, False)
-			if self in obj:
-				obj.remove(self)
-				if obj:
-					self.step_back(self, step=1)
-					self.do_rotation = True
-
-		# СТОЛКНОВЕНИЕ СО СТЕНОЙ
+		# if pg.sprite.spritecollide(self, self.game.tanks_group, False):  # СТОЛКНОВЕНИЕ С ТАНКОМ
+		# 	obj = pg.sprite.spritecollide(self, self.game.tanks_group, False)
+		# 	if self in obj:
+		# 		obj.remove(self)
+		# 		if obj:
+		# 			self.step_back(self, step=1)
+		# 			self.do_rotation = True
+		self.do_rotation = False
 		if any([i.tank_can_move() for i in pg.sprite.spritecollide(self, self.game.walls_group, False)]):  # СТОЛКНОВЕНИЕ СО СТЕНОЙ
-			self.step_back(self, step=1)
+			self.step_back(self, step=2)
 			self.do_rotation = True
 
 		if pg.sprite.spritecollide(self, self.game.tanks_group, False):
@@ -98,6 +99,9 @@ class MainTank(pg.sprite.Sprite):
 			if (
 					obj or not (config.WIDTH - self.size > self.x >= 0)
 					or not (config.HEIGHT - self.size > self.y >= 0)):
+				if self.game.main_tank == self:
+					self.game.button_down = ''
+				self.step_back(self, step=2)
 				self.do_rotation = True
 				self.set_can_move(False)
 				return False
@@ -105,8 +109,9 @@ class MainTank(pg.sprite.Sprite):
 		return True
 
 	# ДВИЖЕНИЕ ВЛЕВО
-	def left_move(self, f=True):  # движение влево
-		self.tank_can_move()
+	def left_move(self, f=True, t=True):  # движение влево
+		if t:
+			self.tank_can_move()
 		if self.x >= 0:
 			if f:
 				self.image = pg.transform.rotate(self.base_image, 90)
@@ -116,8 +121,9 @@ class MainTank(pg.sprite.Sprite):
 			self.vector_y = 0
 
 	# ДВИЖЕНИЕ ВПРАВО
-	def right_move(self, f=True):  # движение вправо
-		self.tank_can_move()
+	def right_move(self, f=True, t=True):  # движение вправо
+		if t:
+			self.tank_can_move()
 		if self.x + self.size <= config.WIDTH:
 			if f:
 				self.image = pg.transform.rotate(self.base_image, -90)
@@ -127,8 +133,9 @@ class MainTank(pg.sprite.Sprite):
 			self.vector_y = 0
 
 	# ДВИЖЕНИЕ ВВЕРХ
-	def up_move(self, f=True):  # движение влево
-		self.tank_can_move()
+	def up_move(self, f=True, t=True):  # движение влево
+		if t:
+			self.tank_can_move()
 		if self.y >= 0:
 			if f:
 				self.image = pg.transform.rotate(self.base_image, 0)
@@ -138,8 +145,9 @@ class MainTank(pg.sprite.Sprite):
 			self.vector_y = -1
 
 	# ДВИЖЕНИЕ ВНИЗ
-	def down_move(self, f=True):  # движение вправо
-		self.tank_can_move()
+	def down_move(self, f=True, t=True):  # движение вправо
+		if t:
+			self.tank_can_move()
 		if self.y + self.size <= config.HEIGHT:
 			if f:
 				self.image = pg.transform.rotate(self.base_image, 180)
@@ -184,10 +192,10 @@ class EnemyTank(MainTank):
 		self.base_image = pg.transform.scale(self.base_image, (self.size, self.size))
 		self.base_image.set_colorkey(self.base_image.get_at((0, 0)))
 		self.base_image = self.base_image.convert_alpha()
-		self.vector_x = random.randint(-1, 1)
 		self.speed = 100
 		self.hp = self.power + 1
 		self.is_pause = False
+		self.vector_x = random.randint(-1, 1)
 		if self.vector_x == 0:
 			self.vector_y = random.choice([-1, 1])
 		else:
@@ -236,18 +244,20 @@ class EnemyTank(MainTank):
 	def update(self, *args):
 		super().update(args)
 		if not self.is_pause and not self.game.is_pause:
-			if (config.FPS // self.shot_time) % config.FPS == self.frame_counter:
+			if (config.FPS // self.shot_time) % config.FPS == self.frame_counter and not self.do_rotation:
 				Fire(self.game, (
 					self.rect.x + self.size // 2,
 					self.rect.y + self.size // 2), False, self.vector_x, self.vector_y)
 				self.frame_counter = 0
 			if self.do_rotation:
-				self.move_rot = random.choice(self.moves)
-				self.move_rot(False)
-				self.move_rot(False)
-				self.do_rotation = False
-			else:
-				self.moves_by_power[self.power]()
+				# self.step_back(self, step=2)
+				self.vector_x = random.randint(-1, 1)
+				if self.vector_x == 0:
+					self.vector_y = random.choice([-1, 1])
+				else:
+					self.vector_y = 0
+				# self.moves_by_power[self.power]()
+			self.moves_by_power[self.power]()
 			if self.frame_for_drawing_hp:
 				if (  # отрисовка HP
 					self.frame_for_drawing_hp + config.FPS // self.time_og_showing_hp) % config.FPS <= self.frame_counter:

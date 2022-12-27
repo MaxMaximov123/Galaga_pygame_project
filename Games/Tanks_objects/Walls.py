@@ -211,9 +211,9 @@ class Iron(Wall):
 
 
 # КЛАСС ВРОДЕ ЛЬДА(НЕ УВЕРЕН, ЧТО ЭТО ИМЕННО ЛЕД)
-class IronXZ(Wall):
+class IronXZ(pg.sprite.Sprite):
 	def __init__(self, game, pos, type_='xz'):
-		super().__init__(game, pos, type_=type_)
+		super().__init__(game.ice_group, game.walls_group)
 		self.size = config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0], config.WIDTH // config.SIZE_BOARD_FOR_TANKS[0]
 		self.base_size = self.size
 		self.game = game
@@ -230,6 +230,15 @@ class IronXZ(Wall):
 
 	def destruction(self, fire):
 		return False
+
+	def set_can_move(self, f):
+		self.can_move = f
+
+	def update(self, *args):
+		self.render()
+
+	def is_collided_with(self, sprite):
+		return self.rect.colliderect(sprite.rect)
 
 	# ОТРИСОВКА
 	def render(self):
