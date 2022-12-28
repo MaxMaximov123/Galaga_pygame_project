@@ -14,7 +14,7 @@ class MainTank(pg.sprite.Sprite):
 		self.pos = pos
 		self.copy_img = None
 		self.size = config.TILE_SIZE - 4  # размер танка
-		self.speed = 300  # пикселе в секунду
+		self.speed = 600 * config.K  # пикселе в секунду
 		self.powers = ['Games/Tanks_objects/data/images/main_tank0.png']
 		self.power = power  # МОЩНОСТЬ ТАНКА
 		self.power1 = power
@@ -192,7 +192,7 @@ class EnemyTank(MainTank):
 		self.base_image = pg.transform.scale(self.base_image, (self.size, self.size))
 		self.base_image.set_colorkey(self.base_image.get_at((0, 0)))
 		self.base_image = self.base_image.convert_alpha()
-		self.speed = 100
+		self.speed = 200 * config.K
 		self.hp = self.power + 1
 		self.is_pause = False
 		self.vector_x = random.randint(-1, 1)

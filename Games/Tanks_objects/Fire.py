@@ -7,8 +7,8 @@ class Fire(pg.sprite.Sprite):
 		super().__init__(game.fires_group)
 		self.step_show = 1
 		self.frame_counter = self.step_show // config.FPS
-		self.size = 20, 40  # размер пули
-		self.speed = config.FPS * 2  # скорость пули пикс/сек
+		self.size = config.TILE_SIZE // 5, config.TILE_SIZE // 3 * 2  # размер пули
+		self.speed = config.FPS * config.K * 4  # скорость пули пикс/сек
 		self.game = game
 		self.image = pg.image.load('Games/Tanks_objects/data/images/fire1.png').convert_alpha()  # картинка спрайта  # контур спрайта
 		self.can_move = True
@@ -27,6 +27,7 @@ class Fire(pg.sprite.Sprite):
 		self.pos = pos
 		self.image = pg.transform.rotate(self.image, angle)
 		self.rect = self.image.get_rect(center=pos)
+		self.x, self.y = self.rect.x, self.rect.y
 
 	def set_can_move(self, f):
 		self.can_move = f
@@ -36,8 +37,8 @@ class Fire(pg.sprite.Sprite):
 			if (
 					config.HEIGHT > self.rect.y + self.size[1] // 2 > + self.size[1] // 2 and
 					config.WIDTH + self.size[0] // 2 > self.rect.x + self.size[0] // 2 > 0):  # ПРОВЕРКА, ЧТО ПУЛИ НА ЭКРАНЕ
-				self.rect.y += self.vector_y / config.FPS
-				self.rect.x += self.vector_x / config.FPS
+				self.y += self.vector_y / config.FPS
+				self.x += self.vector_x / config.FPS
 			else:
 				self.kill()
 
@@ -64,6 +65,7 @@ class Fire(pg.sprite.Sprite):
 				if obj and self.from_main_tank != obj[0].from_main_tank:
 					self.kill()
 					obj[0].kill()
+			self.rect.x, self.rect.y = self.x, self.y
 
 	def is_collided_with(self, sprite):
 		return self.rect.colliderect(sprite.rect)

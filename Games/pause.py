@@ -6,7 +6,7 @@ from Games.button import Button
 class Frame(pg.sprite.Sprite):
 	def __init__(self, pos, size):
 		pg.sprite.Sprite.__init__(self)
-		self.size = size  # размер кнопки
+		self.size = round(size[0] * 2 * config.K), round(size[1] * 2 * config.K)  # размер кнопки
 		self.pos = pos
 		self.image = pg.image.load('Games/Galaga_objects/data/images/frame1.png').convert_alpha()  # картинка спрайта
 		self.image = pg.transform.scale(self.image, (self.size[0], self.size[1]))

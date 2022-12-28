@@ -25,7 +25,7 @@ class Button(pg.sprite.Sprite):
 
 	def update(self):
 		if self.text:
-			font = pg.font.SysFont('monospace', self.text_size)
+			font = pg.font.SysFont('monospace', round(self.text_size * 2 * config.K))
 			text = font.render(self.text, True, (194, 152, 0))
 			self.screen.blit(text, (self.pos[0] - text.get_width() // 2, self.pos[1] - text.get_height() // 2))
 

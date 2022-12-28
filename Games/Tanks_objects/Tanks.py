@@ -251,8 +251,8 @@ class Tanks:
 				Fire(self, (
 					self.main_tank.rect.x + self.main_tank.size // 2,
 					self.main_tank.rect.y + self.main_tank.size // 2),
-					 True,
-					 self.main_tank.vector_x, self.main_tank.vector_y)
+					True,
+					self.main_tank.vector_x, self.main_tank.vector_y)
 				self.sound_shot.play()
 
 			# ПРОВЕРКА НА ПОБЕДУ
@@ -290,6 +290,8 @@ class Tanks:
 
 	# ЗАПУСК ПАУЗЫ
 	def start_pause(self):
+		self.button_down = ''
+		self.space_is_down = False
 		self.is_pause = True
 		self.pause = Pause((config.WIDTH // 2, config.HEIGHT // 5), self.screen)
 		self.pause_group.add(*self.groups)
@@ -359,7 +361,7 @@ class Tanks:
 	def start_screen(self):
 		frames = []
 		for frame in split_animated_gif("Games/Tanks_objects/data/images/fon.gif"):
-			frames += [frame] * 10
+			frames += [frame] * 6
 
 		frame_index = 0
 		fon = pg.transform.scale(frames[frame_index % len(frames)],

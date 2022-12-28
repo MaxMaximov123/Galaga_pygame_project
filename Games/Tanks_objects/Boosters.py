@@ -6,7 +6,7 @@ from Games import config
 class Booster(pg.sprite.Sprite):
 	def __init__(self, game, pos, path='Games/Tanks_objects/data/images/shield_booster.png'):
 		super().__init__(game.boosters_group)
-		self.size = 30, 30  # размер улучшения
+		self.size = round(30 * 2 * config.K), round(30 * 2 * config.K)  # размер улучшения
 		self.game = game
 		self.f = 1
 		self.image = pg.image.load(path)  # картинка спрайта  # контур спрайта
