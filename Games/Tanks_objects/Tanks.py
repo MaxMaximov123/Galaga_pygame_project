@@ -424,6 +424,14 @@ class Tanks:
 			intro_rect.x = config.WIDTH - config.TILE_SIZE * 2
 			self.screen.blit(string_rendered, intro_rect)
 
+			font = pg.font.Font(None, 60)
+			string_rendered = font.render(f'FPS: {round(self.clock.get_fps())}', 1,
+										  pg.Color('#ffcc00'))
+			intro_rect = string_rendered.get_rect()
+			intro_rect.top = config.TILE_SIZE // 4
+			intro_rect.x = config.WIDTH // 2
+			self.screen.blit(string_rendered, intro_rect)
+
 
 if __name__ == '__main__':
 	Tanks()

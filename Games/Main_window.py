@@ -29,7 +29,7 @@ class Snow(pg.sprite.Sprite):
 		self.rect = pg.Rect(self.x, self.y, 2 * self.radius, 2 * self.radius)
 		self.vector_x = random.randint(1, 5)
 		self.vector_y = random.randrange(1, 5)
-		self.speed = random.randint(10, 20)
+		self.speed = random.randint(20, 30)
 		self.x, self.y = self.rect.x, self.rect.y
 
 	def update(self):
@@ -56,7 +56,7 @@ class MainWindow:
 		self.correct_game = None
 		self.correct_position_ind = None
 		self.snow_groups = pg.sprite.Group()
-		self.snow_count = random.randint(300, 800)
+		self.snow_count = random.randint(500, 1000)
 
 	def run(self):
 		pg.init()

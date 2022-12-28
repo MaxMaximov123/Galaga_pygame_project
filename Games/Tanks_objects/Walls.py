@@ -281,7 +281,7 @@ class Bush(pg.sprite.Sprite):
 		self.game = game
 		self.pos = pos
 		self.type_ = type_
-		if random.randint(0, 1):
+		if random.randint(0, 1) and 0:
 			self.image0 = pg.image.load('Games/Tanks_objects/data/images/bush.png')  # картинка спрайта  # контур спрайта
 		else:
 			self.image0 = pg.image.load('Games/Tanks_objects/data/images/Christmas_tree.png')

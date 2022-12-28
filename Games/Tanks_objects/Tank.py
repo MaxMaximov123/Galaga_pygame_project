@@ -170,6 +170,7 @@ class MainTank(pg.sprite.Sprite):
 
 	# ШАГ НАЗАД
 	def step_back(self, tank, step=1, rev=False):
+		x, y = self.x, self.y
 		if rev:
 			if config.WIDTH >= tank.x + tank.speed / config.FPS * tank.vector_x * step + tank.size >= tank.size:
 				tank.x += tank.speed / config.FPS * tank.vector_x * step
@@ -180,6 +181,10 @@ class MainTank(pg.sprite.Sprite):
 				tank.x -= tank.speed / config.FPS * tank.vector_x * step
 			if config.HEIGHT >= tank.y - tank.speed / config.FPS * tank.vector_y * step + tank.size >= tank.size:
 				tank.y -= tank.speed / config.FPS * tank.vector_y * step
+		self.rect.x, self.rect.y = self.x, self.y
+		if any([i.tank_can_move() for i in pg.sprite.spritecollide(self, self.game.walls_group, False)]) or len(pg.sprite.spritecollide(self, self.game.tanks_group, False)) > 1:
+			print(999)
+			self.x, self.y = x, y
 		self.rect.x, self.rect.y = self.x, self.y
 
 

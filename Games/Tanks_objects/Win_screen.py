@@ -16,7 +16,7 @@ class WinScreen(pg.sprite.Sprite):
         self.images = []
         for i in range(4):
             tank_img = pg.image.load(f'Games/Tanks_objects/data/images/enemy_tank{i}.png').convert_alpha()
-            tank_img = pg.transform.scale(tank_img, (40 * round(2 * config.K), 40 * round(2 * config.K)))
+            tank_img = pg.transform.scale(tank_img, (40 * round(config.K), 40 * round(config.K)))
             tank_img = pg.transform.rotate(tank_img, -90)
             self.images.append(tank_img)
         self.game = game
